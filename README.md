@@ -4,13 +4,16 @@ A communications platform for hospitality crews. CrewPoc combines a broadcast fe
 
 Built on Phoenix + the [Ash Framework](https://ash-hq.org/), backed by PostgreSQL, with a React 19 SPA frontend wired to the backend via [AshTypescript](https://hexdocs.pm/ash_typescript) RPC and typed channels.
 
+> [!NOTE]
+> Time-boxed proof of concept, focused on product shape and architecture, not production readiness. Not deployable as-is.
+
 ## Demo
 
-> _Demo video coming soon._
->
-> <!-- demo-video:start -->
-> <!-- Drop the recorded walkthrough here (link or embedded `<video>` tag). -->
-> <!-- demo-video:end -->
+  <video src="https://github.com/user-attachments/
+  assets/3be7c935-d222-4f75-92e0-41437d668d89" 
+  autoplay loop muted playsinline 
+  width="100%"></video>
+
 
 ## Features
 
