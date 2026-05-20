@@ -207,7 +207,7 @@ Ash.bulk_create!(membership_data, VenueMembership, :create,
 IO.puts("Seeded #{length(membership_data)} venue memberships")
 
 # ── SHIFTS ────────────────────────────────────────────
-# 3 shifts/day (Morning, Afternoon, Night) for the next 30 days, per venue.
+# 3 shifts/day (Breakfast, Evening, Overnight) for the next 30 days, per venue.
 today = Date.utc_today()
 venue_ids = [london_id, dubai_id, new_york_id]
 

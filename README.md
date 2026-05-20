@@ -18,46 +18,41 @@ Built on Phoenix + the [Ash Framework](https://ash-hq.org/), backed by PostgreSQ
 ## Features
 
 ### Accounts
-- Single-organization, multi-user model with three roles: admin, manager, and staff.
-- Per-user locale (English / Spanish / Finnish / Portuguese) drives translation rendering across the feed.
-- Birthdays and start dates surface as celebration cards in the feed.
-- Cookie-backed user picker in the top bar — no real auth in the POC, just switch the active user from a dropdown.
+- Users scoped to an organization with three roles: admin, manager, staff.
+- Per-user locale: English, Spanish, Finnish, Portuguese.
+- Birthdays and start dates show up as celebration cards in the feed.
+- Cookie-backed user picker in the top bar. No real auth in the POC.
 
 ### Venues
-- Hotels/sites scoped to the organization, each with its own time zone.
-- Users can work across multiple venues from day one.
-- Creating a venue auto-provisions its chat channel; adding a user to a venue auto-joins them.
+- Hotels scoped to the organization, each with its own time zone.
+- Users can work across multiple venues.
+- Creating a venue creates its chat channel. Adding a user to a venue adds them to the venue chat automatically.
 
 ### Shifts
-- Scheduled work blocks per venue (Morning / Afternoon / Night), seeded 30 days out.
-- Each shift gets a dedicated chat channel; assignments sync channel membership automatically.
+- Breakfast / Evening / Overnight blocks per venue, seeded 30 days out.
+- Each shift has a chat channel.
 
 ### Feed
-- Org-wide and venue-scoped announcements (immutable, no edits or deletes).
-- Optional **Acknowledge** button with inline acked / eligible count and live updates.
-- On-demand LLM translation — when a reader's locale differs from the post's original, the title and body are translated through Google Gemini (via OpenRouter) and cached per `(post, locale)` so subsequent reads are instant.
-- Full-text search across announcements and shoutouts.
+- Org-wide and venue-scoped announcements.
+- Optional Acknowledge button with acked / eligible count.
+- Post translation via Google Gemini (through OpenRouter), cached per `(post, locale)`.
+- Full-text search across announcements and shoutouts (only backend implemented).
 
 ### Recognition
-- Peer-to-peer shoutouts: plain text, one sender → one recipient, no self-shoutouts.
-- Searchable alongside posts. Powers a "wins of the week" leaderboard.
+- Peer-to-peer shoutouts.
+- Feeds a "most praised" leaderboard.
 
 ### Chat
-- Two auto-managed channel kinds: venue channels and shift channels. **No DMs, no user-created groups.**
-- Immutable messages with per-user read tracking for unread badges.
-- Realtime delivery and typed payloads end-to-end on the frontend.
-
-### Cross-cutting
-- **Global search** — one endpoint that fans out to announcements and shoutouts, returns a merged timeline.
-- **Realtime** — typed channels for org-wide feed events (new posts, acknowledgements, shoutouts), per-conversation chat events, and a per-user firehose for unread badges across conversations.
-- **AshAdmin** — auto-generated admin UI mounted at `/admin` in dev for poking at any resource.
+- Two channel kinds: venue and shift.
+- Chat messages with per-user read tracking for unread badges.
+- Realtime delivery with typed payloads.
 
 ## Architecture
 
 - **Backend**: Phoenix 1.8 + Ash 3.x. Domains under `lib/crew_poc/`, web layer under `lib/crew_poc_web/`.
-- **Frontend**: React 19 SPA bundled with esbuild. Tailwind v4 + daisyUI for styling. TanStack Query for data, React Hook Form + zod for forms.
-- **RPC**: backend actions are exposed via AshTypescript; `mix ash_typescript.codegen` regenerates the typed client + typed channels.
-- **No LiveView** for application UI — it's only pulled in for `/dev/dashboard` and AshAdmin.
+- **Frontend**: React 19 SPA bundled with esbuild. Tailwind v4 + daisyUI. TanStack Query for data, React Hook Form + zod for forms.
+- **RPC**: backend actions exposed via AshTypescript. `mix ash_typescript.codegen` regenerates the typed client and channels.
+- **No LiveView** for application UI. Only used by `/dev/dashboard` and AshAdmin.
 
 ## Prerequisites
 
@@ -145,8 +140,8 @@ After wiping data, run `mix setup` again to recreate the databases.
 - **1 organization** — Meridian Hotels & Resorts.
 - **5 users** — one admin, one manager, three staff. Mixed locales and a spread of birthdays / start dates so the celebration cards always have something to show (one user's birthday is pinned to today).
 - **3 venues** — London Mayfair, Dubai Marina, New York Midtown.
-- **Venue memberships** — every user belongs to London; admins/managers also cover Dubai and New York.
-- **Shifts & assignments** — 90 shifts across the next 30 days, with rotating rosters so chat channels have realistic membership.
+- **Venue memberships** — every user belongs to London; the admin and a manager also cover Dubai, and two staff cover New York.
+- **Shifts & assignments** — 270 shifts (3 venues × 3 per day × 30 days), with rotating rosters so chat channels have realistic membership.
 - **Chat messages** — pre-seeded threads in the London venue and next-shift channels.
 - **Posts, acknowledgements, shoutouts** — a handful of each so the feed isn't empty on first load.
 
