@@ -99,4 +99,105 @@ defmodule CrewPoc.Generator do
       authorize?: false
     )
   end
+
+  ##############
+  ### Shifts ###
+  ##############
+
+  @spec shift(keyword()) :: Ash.Generator.t()
+  def shift(opts \\ []) do
+    organization_id =
+      opts[:organization_id] ||
+        once(:default_organization_id, fn -> (organization() |> generate()).id end)
+
+    venue_id =
+      opts[:venue_id] ||
+        ([organization_id: organization_id]
+         |> venue()
+         |> generate()).id
+
+    changeset_generator(
+      CrewPoc.Shifts.Shift,
+      :create,
+      defaults: [
+        name: sequence(:shift_name, &"Shift #{&1}"),
+        starts_at: ~U[2026-06-01 17:00:00Z],
+        ends_at: ~U[2026-06-01 23:00:00Z],
+        organization_id: organization_id,
+        venue_id: venue_id
+      ],
+      overrides: opts,
+      authorize?: false
+    )
+  end
+
+  #########################
+  ### Shift Assignments ###
+  #########################
+
+  @spec shift_assignment(keyword()) :: Ash.Generator.t()
+  def shift_assignment(opts \\ []) do
+    organization_id =
+      opts[:organization_id] ||
+        once(:default_organization_id, fn -> (organization() |> generate()).id end)
+
+    {shift_id, venue_id} = resolve_shift_for_assignment(opts, organization_id)
+    user_id = resolve_user_for_assignment(opts, organization_id, venue_id)
+
+    changeset_generator(
+      CrewPoc.Shifts.ShiftAssignment,
+      :create,
+      defaults: [
+        organization_id: organization_id,
+        shift_id: shift_id,
+        user_id: user_id
+      ],
+      overrides: Keyword.drop(opts, [:venue_id]),
+      authorize?: false
+    )
+  end
+
+  defp resolve_shift_for_assignment(opts, organization_id) do
+    cond do
+      opts[:shift_id] && opts[:venue_id] ->
+        {opts[:shift_id], opts[:venue_id]}
+
+      opts[:shift_id] ->
+        shift = Ash.get!(CrewPoc.Shifts.Shift, opts[:shift_id], authorize?: false)
+        {shift.id, shift.venue_id}
+
+      true ->
+        venue_id =
+          opts[:venue_id] ||
+            ([organization_id: organization_id]
+             |> venue()
+             |> generate()).id
+
+        shift =
+          [organization_id: organization_id, venue_id: venue_id]
+          |> shift()
+          |> generate()
+
+        {shift.id, venue_id}
+    end
+  end
+
+  defp resolve_user_for_assignment(opts, organization_id, venue_id) do
+    case opts[:user_id] do
+      nil ->
+        user_record =
+          [organization_id: organization_id]
+          |> user()
+          |> generate()
+
+        [organization_id: organization_id, venue_id: venue_id, user_id: user_record.id]
+        |> venue_membership()
+        |> generate()
+
+        user_record.id
+
+      user_id ->
+        user_id
+    end
+  end
 end

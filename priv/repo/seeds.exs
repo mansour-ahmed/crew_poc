@@ -4,6 +4,7 @@ import Ecto.Query
 
 alias CrewPoc.Accounts.Organization
 alias CrewPoc.Accounts.User
+alias CrewPoc.Shifts.Shift
 alias CrewPoc.Venues.Venue
 alias CrewPoc.Venues.VenueMembership
 
@@ -21,6 +22,22 @@ user_emails = [
 venue_slugs = ["london-mayfair", "dubai-marina", "new-york-midtown"]
 
 # ── CLEAN UP (reverse dep order) ────────────────────
+CrewPoc.Repo.delete_all(
+  from sa in "shift_assignments",
+    join: s in "shifts",
+    on: sa.shift_id == s.id,
+    join: v in "venues",
+    on: s.venue_id == v.id,
+    where: v.slug in ^venue_slugs
+)
+
+CrewPoc.Repo.delete_all(
+  from s in "shifts",
+    join: v in "venues",
+    on: s.venue_id == v.id,
+    where: v.slug in ^venue_slugs
+)
+
 CrewPoc.Repo.delete_all(
   from vm in "venue_memberships",
     join: u in "users",
@@ -196,4 +213,37 @@ Ash.bulk_create!(membership_data, VenueMembership, :create,
 )
 
 IO.puts("Seeded #{length(membership_data)} venue memberships")
+
+# ── SHIFTS ────────────────────────────────────────────
+# 3 shifts/day (Morning, Afternoon, Night) for the next 30 days, per venue.
+today = Date.utc_today()
+venue_ids = [london_id, dubai_id, new_york_id]
+
+shift_templates = [
+  {"Morning", ~T[06:00:00], ~T[14:00:00], 0},
+  {"Afternoon", ~T[14:00:00], ~T[22:00:00], 0},
+  {"Night", ~T[22:00:00], ~T[06:00:00], 1}
+]
+
+shift_data =
+  for venue_id <- venue_ids,
+      day_offset <- 0..29,
+      {name, start_time, end_time, end_day_offset} <- shift_templates do
+    date = Date.add(today, day_offset)
+
+    %{
+      name: name,
+      starts_at: DateTime.new!(date, start_time, "Etc/UTC"),
+      ends_at: DateTime.new!(Date.add(date, end_day_offset), end_time, "Etc/UTC"),
+      venue_id: venue_id,
+      organization_id: meridian_org_id
+    }
+  end
+
+Ash.bulk_create!(shift_data, Shift, :create,
+  return_errors?: true,
+  authorize?: false
+)
+
+IO.puts("Seeded #{length(shift_data)} shifts")
 IO.puts("Seeds complete!")
