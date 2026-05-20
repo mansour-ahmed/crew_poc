@@ -10,6 +10,11 @@ defmodule CrewPoc.Venues.VenueMembership do
   postgres do
     table "venue_memberships"
     repo CrewPoc.Repo
+
+    references do
+      reference :venue, on_delete: :delete
+      reference :user, on_delete: :delete
+    end
   end
 
   typescript do

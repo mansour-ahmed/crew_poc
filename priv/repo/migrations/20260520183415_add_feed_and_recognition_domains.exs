@@ -18,7 +18,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             type: :uuid,
             prefix: "public",
             on_delete: :delete_all
-          ), null: false
+          ),
+          null: false
 
       add :sender_id,
           references(:users,
@@ -26,7 +27,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             name: "shoutouts_sender_id_fkey",
             type: :uuid,
             prefix: "public"
-          ), null: false
+          ),
+          null: false
 
       add :recipient_id,
           references(:users,
@@ -34,7 +36,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             name: "shoutouts_recipient_id_fkey",
             type: :uuid,
             prefix: "public"
-          ), null: false
+          ),
+          null: false
 
       add :body, :text, null: false
 
@@ -62,7 +65,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             type: :uuid,
             prefix: "public",
             on_delete: :delete_all
-          ), null: false
+          ),
+          null: false
 
       add :venue_id,
           references(:venues,
@@ -79,7 +83,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             name: "posts_author_id_fkey",
             type: :uuid,
             prefix: "public"
-          ), null: false
+          ),
+          null: false
 
       add :title, :text, null: false
       add :body, :text, null: false
@@ -109,7 +114,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             type: :uuid,
             prefix: "public",
             on_delete: :delete_all
-          ), null: false
+          ),
+          null: false
 
       add :post_id,
           references(:posts,
@@ -118,7 +124,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             type: :uuid,
             prefix: "public",
             on_delete: :delete_all
-          ), null: false
+          ),
+          null: false
 
       add :target_locale, :text, null: false
       add :title, :text, null: false
@@ -147,7 +154,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             type: :uuid,
             prefix: "public",
             on_delete: :delete_all
-          ), null: false
+          ),
+          null: false
 
       add :post_id,
           references(:posts,
@@ -156,7 +164,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             type: :uuid,
             prefix: "public",
             on_delete: :delete_all
-          ), null: false
+          ),
+          null: false
 
       add :user_id,
           references(:users,
@@ -164,7 +173,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             name: "acknowledgements_user_id_fkey",
             type: :uuid,
             prefix: "public"
-          ), null: false
+          ),
+          null: false
 
       add :inserted_at, :utc_datetime_usec,
         null: false,

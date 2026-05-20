@@ -15,6 +15,7 @@ defmodule CrewPoc.Chat.ConversationMembership do
 
     references do
       reference :conversation, on_delete: :delete
+      reference :user, on_delete: :delete
     end
   end
 

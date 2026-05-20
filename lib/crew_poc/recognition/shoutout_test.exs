@@ -40,7 +40,6 @@ defmodule CrewPoc.Recognition.ShoutoutTest do
                  actor: sender
                )
     end
-
   end
 
   describe "validations" do
