@@ -3,7 +3,11 @@ defmodule CrewPoc.Chat.Message do
     domain: CrewPoc.Chat,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshTypescript.Resource],
-    authorizers: [Ash.Policy.Authorizer]
+    authorizers: [Ash.Policy.Authorizer],
+    notifiers: [Ash.Notifier.PubSub]
+
+  @conversation_topic_prefix CrewPocWeb.ChatConversationChannel.prefix()
+  @message_created_event CrewPocWeb.ChatConversationChannel.message_created_event()
 
   postgres do
     table "messages"
@@ -52,6 +56,14 @@ defmodule CrewPoc.Chat.Message do
     end
   end
 
+  pub_sub do
+    module CrewPocWeb.Endpoint
+
+    publish @message_created_event, :create, [@conversation_topic_prefix, :conversation_id],
+      public?: true,
+      transform: :message_summary
+  end
+
   attributes do
     uuid_primary_key :id
 
@@ -76,5 +88,19 @@ defmodule CrewPoc.Chat.Message do
       attribute_writable?: true,
       define_attribute?: false,
       source_attribute: :author_id
+  end
+
+  calculations do
+    calculate :message_summary,
+              :auto,
+              expr(%{
+                id: id,
+                conversation_id: conversation_id,
+                author_id: author_id,
+                body: body,
+                inserted_at: inserted_at
+              }) do
+      public? true
+    end
   end
 end

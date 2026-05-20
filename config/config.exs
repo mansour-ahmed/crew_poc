@@ -22,7 +22,9 @@ config :ash_typescript,
   phoenix_import_path: "phoenix",
   typed_controllers: [CrewPoc.CurrentUser],
   router: CrewPocWeb.Router,
-  routes_output_file: "assets/js/routes.ts"
+  routes_output_file: "assets/js/routes.ts",
+  typed_channels: [CrewPocWeb.ChatConversationChannel, CrewPocWeb.UserNotificationsChannel],
+  typed_channels_output_file: "assets/js/ash_typed_channels.ts"
 
 config :ash,
   allow_forbidden_field_for_relationships_by_default?: true,

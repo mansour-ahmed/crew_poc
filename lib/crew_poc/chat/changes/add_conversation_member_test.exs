@@ -106,10 +106,6 @@ defmodule CrewPoc.Chat.Changes.AddConversationMemberTest do
   describe "cascade on parent deletion" do
     test "given a Venue is deleted at the DB level, its Conversation, memberships, and messages cascade",
          %{organization: organization, venue: venue, user: user} do
-      [organization_id: organization.id, venue_id: venue.id, user_id: user.id]
-      |> venue_membership()
-      |> generate()
-
       conversation = venue_conversation(venue_id: venue.id)
 
       [
@@ -132,22 +128,12 @@ defmodule CrewPoc.Chat.Changes.AddConversationMemberTest do
 
     test "given a Shift is deleted at the DB level, its Conversation, memberships, and messages cascade",
          %{organization: organization, venue: venue, user: user} do
-      [organization_id: organization.id, venue_id: venue.id, user_id: user.id]
-      |> venue_membership()
-      |> generate()
-
       shift =
         [organization_id: organization.id, venue_id: venue.id]
         |> shift()
         |> generate()
 
       shift_conversation = shift_conversation(shift_id: shift.id)
-
-      Shifts.create_shift_assignment!(%{
-        organization_id: organization.id,
-        shift_id: shift.id,
-        user_id: user.id
-      })
 
       [
         organization_id: organization.id,

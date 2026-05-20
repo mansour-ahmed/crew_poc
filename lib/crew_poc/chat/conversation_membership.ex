@@ -3,7 +3,11 @@ defmodule CrewPoc.Chat.ConversationMembership do
     domain: CrewPoc.Chat,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshTypescript.Resource],
-    authorizers: [Ash.Policy.Authorizer]
+    authorizers: [Ash.Policy.Authorizer],
+    notifiers: [Ash.Notifier.PubSub]
+
+  @user_topic_prefix CrewPocWeb.UserNotificationsChannel.prefix()
+  @unread_changed_event CrewPocWeb.UserNotificationsChannel.unread_changed_event()
 
   postgres do
     table "conversation_memberships"
@@ -58,6 +62,14 @@ defmodule CrewPoc.Chat.ConversationMembership do
     end
   end
 
+  pub_sub do
+    module CrewPocWeb.Endpoint
+
+    publish @unread_changed_event, :mark_read, [@user_topic_prefix, :user_id],
+      public?: true,
+      transform: :unread_summary
+  end
+
   attributes do
     uuid_primary_key :id
 
@@ -76,6 +88,18 @@ defmodule CrewPoc.Chat.ConversationMembership do
     belongs_to :user, CrewPoc.Accounts.User,
       attribute_writable?: true,
       define_attribute?: false
+  end
+
+  calculations do
+    calculate :unread_summary,
+              :auto,
+              expr(%{
+                conversation_id: conversation_id,
+                user_id: user_id,
+                last_read_at: last_read_at
+              }) do
+      public? true
+    end
   end
 
   identities do
