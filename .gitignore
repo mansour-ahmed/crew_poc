@@ -38,3 +38,6 @@ npm-debug.log
 # Local docker-compose Postgres data.
 /.postgres-data/
 
+# Local environment variables (use .env.example as a template).
+/.env
+
