@@ -212,9 +212,9 @@ today = Date.utc_today()
 venue_ids = [london_id, dubai_id, new_york_id]
 
 shift_templates = [
-  {"Morning", ~T[06:00:00], ~T[14:00:00], 0},
-  {"Afternoon", ~T[14:00:00], ~T[22:00:00], 0},
-  {"Night", ~T[22:00:00], ~T[06:00:00], 1}
+  {"Breakfast", ~T[06:00:00], ~T[14:00:00], 0},
+  {"Evening", ~T[14:00:00], ~T[22:00:00], 0},
+  {"Overnight", ~T[22:00:00], ~T[06:00:00], 1}
 ]
 
 shift_data =
@@ -224,7 +224,7 @@ shift_data =
     date = Date.add(today, day_offset)
 
     %{
-      name: name,
+      name: "#{name} — #{Calendar.strftime(date, "%a %-d %b")}",
       starts_at: DateTime.new!(date, start_time, "Etc/UTC"),
       ends_at: DateTime.new!(Date.add(date, end_day_offset), end_time, "Etc/UTC"),
       venue_id: venue_id,
