@@ -103,7 +103,8 @@ defmodule CrewPoc.Recognition.Shoutout do
     attribute :recipient_id, :uuid, allow_nil?: false, public?: true
     attribute :body, :string, allow_nil?: false, public?: true
 
-    timestamps()
+    create_timestamp :inserted_at, public?: true
+    update_timestamp :updated_at, public?: true
   end
 
   relationships do

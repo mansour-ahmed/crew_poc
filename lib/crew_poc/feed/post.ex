@@ -105,7 +105,8 @@ defmodule CrewPoc.Feed.Post do
       default: false,
       public?: true
 
-    timestamps()
+    create_timestamp :inserted_at, public?: true
+    update_timestamp :updated_at, public?: true
   end
 
   relationships do
