@@ -40,8 +40,12 @@ export function ShoutoutComposePage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-6">
-        <Link to="/" className="text-sm text-base-content/60 hover:text-base-content">
-          ← Back to feed
+        <Link
+          to="/"
+          className="group inline-flex items-center gap-1 text-sm text-base-content/60 hover:text-base-content transition-colors duration-150"
+        >
+          <span aria-hidden="true" className="inline-block transition-transform duration-150 group-hover:-translate-x-0.5">←</span>
+          Back to feed
         </Link>
       </div>
 
@@ -101,11 +105,11 @@ export function ShoutoutComposePage() {
           <button
             type="submit"
             disabled={isSubmitting || mutation.isPending}
-            className="btn btn-secondary"
+            className="btn btn-secondary transition-transform active:scale-95 disabled:active:scale-100"
           >
             {mutation.isPending ? "Sending…" : "Send shoutout"}
           </button>
-          <Link to="/" className="btn btn-ghost">
+          <Link to="/" className="btn btn-ghost transition-transform active:scale-95">
             Cancel
           </Link>
         </div>

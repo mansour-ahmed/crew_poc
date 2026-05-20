@@ -43,7 +43,11 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
           placeholder="Write a message…"
           className="textarea textarea-bordered flex-1 resize-none min-h-12 max-h-40"
         />
-        <button type="submit" disabled={!canSend} className="btn btn-primary">
+        <button
+          type="submit"
+          disabled={!canSend}
+          className="btn btn-primary transition-transform active:scale-95 disabled:active:scale-100"
+        >
           Send
         </button>
       </div>

@@ -81,9 +81,10 @@ export function ChatDock() {
         </div>
         <Link
           to="/chat"
-          className="text-xs font-medium text-base-content/80 hover:text-base-content underline underline-offset-2 decoration-base-content/30 hover:decoration-base-content"
+          className="group text-xs font-medium text-base-content/80 hover:text-base-content underline underline-offset-2 decoration-base-content/30 hover:decoration-base-content transition-colors duration-150 inline-flex items-center gap-0.5"
         >
-          Open chat →
+          Open chat
+          <span aria-hidden="true" className="inline-block transition-transform duration-150 group-hover:translate-x-0.5">→</span>
         </Link>
       </div>
 

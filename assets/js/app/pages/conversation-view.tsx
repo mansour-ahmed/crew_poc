@@ -53,7 +53,7 @@ export function ConversationView() {
         <Link
           to="/chat"
           aria-label="Back to conversations"
-          className="lg:hidden text-base-content/60 hover:text-base-content text-lg leading-none"
+          className="lg:hidden text-base-content/60 hover:text-base-content text-lg leading-none transition-all duration-150 hover:-translate-x-0.5"
         >
           ←
         </Link>

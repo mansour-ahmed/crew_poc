@@ -76,8 +76,8 @@ export function UserPicker() {
       <button
         className={
           buttonState === "no-user"
-            ? "flex items-center gap-2 rounded-full bg-base-content text-base-100 hover:bg-base-content/85 px-4 py-1.5 text-sm font-medium shadow-sm transition-colors duration-150"
-            : "flex items-center gap-2 rounded-full border border-base-300 bg-base-100 hover:bg-base-200 pl-1 pr-3 py-1 text-sm transition-colors duration-150"
+            ? "group flex items-center gap-2 rounded-full bg-base-content text-base-100 hover:bg-base-content/85 px-4 py-1.5 text-sm font-medium shadow-sm transition-colors duration-150 cursor-pointer"
+            : "group flex items-center gap-2 rounded-full border border-base-300 bg-base-100 hover:bg-base-200 pl-1 pr-3 py-1 text-sm transition-colors duration-150 cursor-pointer"
         }
         onClick={() => setOpen((previous) => !previous)}
         tabIndex={0}
@@ -111,7 +111,7 @@ export function UserPicker() {
 
       {open && (
         <ul
-          className="absolute right-0 top-full mt-2 z-50 p-1.5 shadow-xl shadow-secondary/15 bg-base-100 rounded-xl w-64 border border-base-300"
+          className="absolute right-0 top-full mt-2 z-50 p-1.5 shadow-xl shadow-secondary/15 bg-base-100 rounded-xl w-64 border border-base-300 animate-fade-in-up origin-top-right"
           role="listbox"
         >
           {users.length === 0 ? (
@@ -120,7 +120,7 @@ export function UserPicker() {
             users.map((user) => (
               <li key={user.id}>
                 <button
-                  className={`flex items-center gap-3 w-full text-left rounded-lg px-2 py-2 transition-colors duration-100 ${currentUser?.id === user.id
+                  className={`group flex items-center gap-3 w-full text-left rounded-lg px-2 py-2 cursor-pointer transition-colors duration-100 ${currentUser?.id === user.id
                       ? "bg-lime-100 text-primary-content"
                       : "hover:bg-base-200"
                     }`}

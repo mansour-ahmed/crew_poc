@@ -57,10 +57,16 @@ export function FeedPage() {
           </div>
         </div>
         <div className="flex gap-2 shrink-0">
-          <Link to="/posts/new" className="btn btn-sm btn-primary flex-1 sm:flex-none">
+          <Link
+            to="/posts/new"
+            className="btn btn-sm btn-primary flex-1 sm:flex-none shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95"
+          >
             + New post
           </Link>
-          <Link to="/shoutouts/new" className="btn btn-sm btn-secondary flex-1 sm:flex-none">
+          <Link
+            to="/shoutouts/new"
+            className="btn btn-sm btn-secondary flex-1 sm:flex-none shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95"
+          >
             Send shoutout
           </Link>
         </div>

@@ -10,7 +10,7 @@ interface ShoutoutCardProps {
 
 export function ShoutoutCard({ shoutout, sender, recipient }: ShoutoutCardProps) {
   return (
-    <article className="bg-base-100 border-2 border-dotted border-secondary/40 rounded-2xl p-5 space-y-3">
+    <article className="bg-base-100 border-2 border-dotted border-primary rounded-2xl p-5 space-y-3">
       <header className="flex items-center gap-3 text-sm">
         <UserAvatar name={sender?.name ?? "?"} id={shoutout.senderId} size="sm" />
         <span className="text-base-content/70">

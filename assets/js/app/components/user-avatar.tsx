@@ -34,7 +34,7 @@ export function UserAvatar({ name, id, size = "md" }: Props) {
 
   return (
     <div
-      className={`${sizeClasses[size]} rounded-full flex items-center justify-center font-semibold text-white flex-shrink-0 transition-transform duration-150 hover:scale-105 shadow-sm`}
+      className={`${sizeClasses[size]} rounded-full flex items-center justify-center font-semibold text-white flex-shrink-0 transition-transform duration-150 group-hover:scale-105 shadow-sm`}
       style={{ backgroundColor: color }}
       title={name}
     >

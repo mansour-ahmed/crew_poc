@@ -59,7 +59,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={toast.id}
             role="status"
             aria-live="polite"
-            className="pointer-events-auto flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full bg-primary text-primary-content ring-1 ring-secondary/10 shadow-lg"
+            className="pointer-events-auto flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full bg-primary text-primary-content ring-1 ring-secondary/10 shadow-lg animate-fade-in-up"
           >
             <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-content/15">
               <CheckIcon className="w-4 h-4" />

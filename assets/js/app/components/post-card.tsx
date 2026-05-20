@@ -83,13 +83,17 @@ export function PostCard({ post, author }: PostCardProps) {
                 : `Translate from ${sourceLocaleLabel}`
             }
             aria-label={`Translate from ${sourceLocaleLabel}`}
-            className={`shrink-0 p-1.5 rounded-md transition-colors ${
+            className={`group shrink-0 p-1.5 rounded-md cursor-pointer transition-all duration-150 active:scale-90 ${
               showingTranslation
                 ? "bg-base-content text-base-100 hover:bg-base-content/85"
                 : "text-base-content/80 hover:text-base-content hover:bg-base-200"
-            } disabled:opacity-50 disabled:cursor-progress`}
+            } disabled:opacity-50 disabled:cursor-progress disabled:active:scale-100`}
           >
-            <TranslateIcon className="w-5 h-5" />
+            <TranslateIcon
+              className={`w-5 h-5 transition-transform duration-200 group-hover:-rotate-12 ${
+                translate.isPending ? "animate-pulse" : ""
+              }`}
+            />
           </button>
         ) : null}
       </header>
@@ -123,14 +127,14 @@ export function PostCard({ post, author }: PostCardProps) {
         ) : null}
       </div>
 
-      <footer className="flex items-center justify-between gap-3 text-xs text-base-content/60 pt-2 border-t border-base-content/5">
-        <span>
-          {post.ackCount} acknowledgement{post.ackCount === 1 ? "" : "s"}
-        </span>
-        {post.requiresAcknowledgement ? (
+      {post.requiresAcknowledgement ? (
+        <footer className="flex items-center justify-between gap-3 text-xs text-base-content/60 pt-2 border-t border-base-content/5">
+          <span>
+            {post.ackCount} acknowledgement{post.ackCount === 1 ? "" : "s"}
+          </span>
           <AckButton postId={post.id} acknowledged={post.acknowledgedByActor === true} />
-        ) : null}
-      </footer>
+        </footer>
+      ) : null}
     </article>
   );
 }

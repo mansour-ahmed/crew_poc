@@ -16,9 +16,10 @@ export function ChatLayout() {
           <div className="px-5 py-3 border-b border-base-content/10">
             <Link
               to="/"
-              className="text-sm text-base-content/60 hover:text-base-content transition-colors inline-flex items-center gap-1.5"
+              className="group text-sm text-base-content/60 hover:text-base-content transition-colors duration-150 inline-flex items-center gap-1.5"
             >
-              ← Back to feed
+              <span aria-hidden="true" className="inline-block transition-transform duration-150 group-hover:-translate-x-0.5">←</span>
+              Back to feed
             </Link>
           </div>
           <div className="flex-1 overflow-y-auto">
