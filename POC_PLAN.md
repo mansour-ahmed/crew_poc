@@ -413,10 +413,10 @@ Conversational messaging. The "replace WhatsApp" half of the brief — but slimm
 
 `ash_ai` is already a dependency. Translation lives on `PostTranslation` as a **prompt-backed action** — `ash_ai` handles the LLM call, structured output, and ReqLLM integration. We don't write any raw HTTP code.
 
-**Provider:** OpenAI via ReqLLM. Configure in `runtime.exs`:
+**Provider:** Google Gemini via OpenRouter (using ReqLLM). Configure in `runtime.exs`:
 
 ```elixir
-config :req_llm, openai_api_key: System.fetch_env!("OPENAI_API_KEY")
+config :req_llm, openrouter_api_key: System.fetch_env!("OPENROUTER_API_KEY")
 ```
 
 Run `mix igniter.install ash_ai` if extensions aren't yet wired up.
@@ -446,7 +446,7 @@ defmodule CrewPoc.Feed.PostTranslation do
       argument :source_locale, :atom, allow_nil?: false
       argument :target_locale, :atom, allow_nil?: false
 
-      run prompt("openai:gpt-4o-mini",
+      run prompt("openrouter:google/gemini-3.5-flash",
         prompt: """
         Translate the following announcement from <%= @input.arguments.source_locale %> to <%= @input.arguments.target_locale %>.
         Return the translated title and body. Do not add commentary, quotes, or labels.
@@ -561,7 +561,7 @@ _All major decisions resolved. Remaining items are implementation details to set
 
 **Resolved during this iteration:**
 - Seed shape: 1 org (Meridian Hotels & Resorts), 3 international venues (London, Dubai, New York), 20 users with globally diverse names across **fi / pt / es** locales, 5 shifts, 10 announcements, 15 shoutouts. (~~1 active pulse survey~~ removed — Engagement is cancelled.)
-- LLM provider: **OpenAI** via ReqLLM (`gpt-4o-mini` for translation). `OPENAI_API_KEY` in env.
+- LLM provider: **Google Gemini** via OpenRouter + ReqLLM (`google/gemini-3.5-flash` for translation). `OPENROUTER_API_KEY` in env.
 - Single org per user, no Membership resource → use `User.role`.
 - Venue assignment is flat m2m, no primary/secondary kind.
 - Shifts: separate domain, seeded only, no admin UI.
@@ -1058,7 +1058,7 @@ Everything downstream assumes this is done. Don't fan out before it's green.
 **Backend**
 1. Install deps via igniter: `ash_postgres`, `ash_phoenix`, `ash_typescript`, `ash_ai`. Run `mix igniter.install ash_ai` so prompt-backed actions are wired.
 2. Configure `Repo.installed_extensions/0` to include `["ash-functions", "pg_trgm"]`. Run `mix ash.setup`.
-3. Configure ReqLLM in `runtime.exs` with `OPENAI_API_KEY`.
+3. Configure ReqLLM in `runtime.exs` with `OPENROUTER_API_KEY`.
 4. **Accounts domain**: `Organization` (id, name, slug, timestamps), `User` (all fields per §3.1). Code interface + RPC actions for `User.list` and `User.get`.
 5. **Venues domain**: `Venue`, `VenueMembership` per §3.2. Code interface + RPC for `Venue.list` and `VenueMembership.list_for_user`. **Stub the after-action hook** (`Venue.create` → `Conversation.create_venue_channel`) to a no-op for now — Slice B will replace it.
 6. `CrewPocWeb.Plugs.CurrentUser` — reads `_crew_poc_user_id` cookie, loads `User` by id, sets `conn.assigns.current_user`. Add to browser pipeline.
@@ -1111,7 +1111,7 @@ Each slice is end-to-end: domain + actions + frontend. Slices don't import from 
 - Ack a post, see the count tick live for other users.
 - Send a shoutout, see it appear in the feed + leaderboard.
 - Search returns matching posts and shoutouts.
-- A post with `auto_translate: true` written in `:fi` displays translated body+title for an `:es` reader (via real OpenAI call).
+- A post with `auto_translate: true` written in `:fi` displays translated body+title for an `:es` reader (via real OpenRouter call).
 - Today's birthday/anniversary users appear as celebration cards.
 
 ---
@@ -1193,7 +1193,7 @@ Single agent again. Runs after all three slices are independently green.
 
 **Tasks**
 1. **Full seed file**: 1 org, 3 venues, 20 users (locales fi/pt/es, varied roles, mixed birthdays + started_at), 5 shifts with assignments, 10 announcements (mix of org-wide + venue-scoped, some `auto_translate: true`), 15 shoutouts (varied senders/recipients spread over the last 14 days for leaderboard variety). (Pulse surveys + responses removed — Engagement cancelled.)
-2. **Translation smoke test**: pick one seeded `:fi` post with `auto_translate: true`, log in as a `:pt` user, verify a real OpenAI call lands and is cached on the second view.
+2. **Translation smoke test**: pick one seeded `:fi` post with `auto_translate: true`, log in as a `:pt` user, verify a real OpenRouter call lands and is cached on the second view.
 3. **Cross-slice scenarios**:
    - Adding a user to a venue (via iex) auto-joins them to that venue's chat channel — verify in two browsers.
    - Posting an announcement triggers `post_created` on `org:*` and updates every signed-in user's feed simultaneously.

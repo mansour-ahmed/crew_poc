@@ -68,7 +68,7 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
-  config :req_llm, openai_api_key: System.fetch_env!("OPENAI_API_KEY")
+  config :req_llm, openrouter_api_key: System.fetch_env!("OPENROUTER_API_KEY")
 
   # ## SSL Support
   #

@@ -34,7 +34,7 @@ defmodule CrewPoc.Feed.PostTranslation do
       argument :source_locale, :string, allow_nil?: false
       argument :target_locale, :string, allow_nil?: false
 
-      run prompt("openai:gpt-4o-mini",
+      run prompt("openrouter:google/gemini-3.5-flash",
             prompt: """
             Translate the following announcement from <%= @input.arguments.source_locale %> to <%= @input.arguments.target_locale %>.
             Return the translated title and body. Do not add commentary, quotes, or labels.

@@ -32,7 +32,7 @@ Built on Phoenix + the [Ash Framework](https://ash-hq.org/), backed by PostgreSQ
 ### Feed
 - Org-wide and venue-scoped announcements (immutable, no edits or deletes).
 - Optional **Acknowledge** button with inline acked / eligible count and live updates.
-- On-demand LLM translation — when a reader's locale differs from the post's original, the title and body are translated through OpenAI and cached per `(post, locale)` so subsequent reads are instant.
+- On-demand LLM translation — when a reader's locale differs from the post's original, the title and body are translated through Google Gemini (via OpenRouter) and cached per `(post, locale)` so subsequent reads are instant.
 - Full-text search across announcements and shoutouts.
 
 ### Recognition
@@ -60,7 +60,7 @@ Built on Phoenix + the [Ash Framework](https://ash-hq.org/), backed by PostgreSQ
 
 - [mise](https://mise.jdx.dev/) — run `mise install` from the project root to pick up the right Elixir/OTP versions.
 - [Docker](https://docs.docker.com/get-docker/) — runs PostgreSQL locally via `docker-compose.yml`.
-- `OPENAI_API_KEY` in your environment if you want post auto-translation to actually call OpenAI.
+- `OPENROUTER_API_KEY` in your environment if you want post auto-translation to actually call the LLM (we use `google/gemini-3.5-flash` via OpenRouter).
 
 ## Getting started
 
@@ -99,7 +99,7 @@ Visit [`localhost:4000`](http://localhost:4000). Switch users from the dropdown 
 | `mix setup` | Install deps, set up the database, build assets, run seeds. Run once after clone. |
 | `mix seed` | Re-run the seeds (idempotent — cleans seeded rows first). |
 | `mix phx.server` | Start the app on `http://localhost:4000`. |
-| `mix serve:dev` | Same as above, but wraps the server in `op run --env-file .env` to load secrets (e.g. `OPENAI_API_KEY`). |
+| `mix serve:dev` | Same as above, but wraps the server in `op run --env-file .env` to load secrets (e.g. `OPENROUTER_API_KEY`). |
 | `mix precommit` | Compile (warnings as errors), check unused deps, check codegen is up to date, format, credo, and tests. **Run this before every commit.** |
 
 ### Ash
