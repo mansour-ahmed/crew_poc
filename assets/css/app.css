@@ -18,29 +18,28 @@
   We ship with two themes, a light one inspired on Phoenix colors and a dark one inspired
   on Elixir colors. Build your own at: https://daisyui.com/theme-generator/ */
 @plugin "../vendor/daisyui-theme" {
-  name: "dark";
+  name: "light";
   default: true;
-  prefersdark: true;
-  color-scheme: "dark";
-  --color-base-100: #0a0a0a;
-  --color-base-200: #111111;
-  --color-base-300: #1a1a1a;
-  --color-base-content: #f5f5f5;
-  --color-primary: #f5f5f5;
-  --color-primary-content: #0a0a0a;
-  --color-secondary: #a3a3a3;
-  --color-secondary-content: #0a0a0a;
-  --color-accent: #7c5cff;
-  --color-accent-content: #ffffff;
-  --color-neutral: #1f1f1f;
-  --color-neutral-content: #f5f5f5;
-  --color-info: oklch(70% 0.12 240);
-  --color-info-content: oklch(15% 0.02 240);
-  --color-success: oklch(72% 0.14 155);
-  --color-success-content: oklch(15% 0.02 155);
-  --color-warning: oklch(78% 0.16 80);
+  color-scheme: "light";
+  --color-base-100: #fafaf9;
+  --color-base-200: #f5f5f4;
+  --color-base-300: #e7e5e4;
+  --color-base-content: #1c1917;
+  --color-primary: #d9f99d;
+  --color-primary-content: #1c1917;
+  --color-secondary: #021b25;
+  --color-secondary-content: #fafaf9;
+  --color-accent: #84cc16;
+  --color-accent-content: #1c1917;
+  --color-neutral: #1c1917;
+  --color-neutral-content: #fafaf9;
+  --color-info: oklch(60% 0.12 240);
+  --color-info-content: oklch(98% 0.01 240);
+  --color-success: oklch(55% 0.14 155);
+  --color-success-content: oklch(98% 0.01 155);
+  --color-warning: oklch(68% 0.16 80);
   --color-warning-content: oklch(15% 0.02 80);
-  --color-error: oklch(65% 0.22 25);
+  --color-error: oklch(58% 0.22 25);
   --color-error-content: oklch(98% 0.01 25);
   --radius-selector: 0.5rem;
   --radius-field: 0.5rem;
@@ -53,11 +52,10 @@
 }
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
-  font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

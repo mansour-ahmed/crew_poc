@@ -68,7 +68,7 @@ export function UserPicker() {
   return (
     <div className="relative" ref={containerRef}>
       <button
-        className="flex items-center gap-2 rounded-full border border-base-content/10 bg-base-200 hover:bg-base-300 pl-1 pr-3 py-1 text-sm transition-colors duration-150"
+        className="flex items-center gap-2 rounded-full border border-base-300 bg-base-100 hover:bg-base-200 pl-1 pr-3 py-1 text-sm transition-colors duration-150"
         onClick={() => setOpen((previous) => !previous)}
         tabIndex={0}
         aria-haspopup="listbox"
@@ -95,7 +95,7 @@ export function UserPicker() {
 
       {open && (
         <ul
-          className="absolute right-0 top-full mt-2 z-50 p-1.5 shadow-2xl shadow-black/40 bg-base-200 rounded-xl w-64 border border-base-content/10"
+          className="absolute right-0 top-full mt-2 z-50 p-1.5 shadow-xl shadow-secondary/15 bg-base-100 rounded-xl w-64 border border-base-300"
           role="listbox"
         >
           {users.length === 0 ? (
@@ -104,8 +104,10 @@ export function UserPicker() {
             users.map((user) => (
               <li key={user.id}>
                 <button
-                  className={`flex items-center gap-3 w-full text-left rounded-lg px-2 py-2 transition-colors duration-100 hover:bg-base-300 ${
-                    currentUser?.id === user.id ? "bg-base-300" : ""
+                  className={`flex items-center gap-3 w-full text-left rounded-lg px-2 py-2 transition-colors duration-100 ${
+                    currentUser?.id === user.id
+                      ? "bg-lime-100 text-primary-content"
+                      : "hover:bg-base-200"
                   }`}
                   onClick={() => switchUser(user.id)}
                   role="option"
@@ -114,11 +116,19 @@ export function UserPicker() {
                   <UserAvatar name={user.name} id={user.id} size="sm" />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium truncate">{user.name}</div>
-                    <div className="text-xs text-base-content/50 capitalize">{user.role}</div>
+                    <div
+                      className={`text-xs capitalize ${
+                        currentUser?.id === user.id
+                          ? "text-primary-content/70"
+                          : "text-base-content/50"
+                      }`}
+                    >
+                      {user.role}
+                    </div>
                   </div>
                   {currentUser?.id === user.id && (
                     <svg
-                      className="w-3.5 h-3.5 ml-auto text-accent flex-shrink-0"
+                      className="w-3.5 h-3.5 ml-auto text-secondary flex-shrink-0"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                       aria-label="Current user"

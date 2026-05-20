@@ -23,7 +23,7 @@ export function TopBar() {
             Crew
             <span
               aria-hidden="true"
-              className="inline-block w-1.5 h-1.5 bg-base-content rotate-45 -translate-y-px"
+              className="inline-block w-1.5 h-1.5 bg-secondary rotate-45 -translate-y-px"
             />
           </span>
           <nav className="flex items-center gap-7" aria-label="Main navigation">

@@ -39,10 +39,14 @@ export function FeedPage() {
   const firstName = currentUser.name.split(" ")[0];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       <div className="flex items-center gap-5">
         <UserAvatar name={currentUser.name} id={currentUser.id} size="lg" />
         <div className="min-w-0">
+          <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-secondary mb-2">
+            <span aria-hidden="true" className="inline-block w-1.5 h-1.5 bg-accent rotate-45" />
+            Your feed
+          </p>
           <h1 className="text-3xl font-semibold tracking-tight truncate">
             Hey, {firstName}.
           </h1>
@@ -52,9 +56,16 @@ export function FeedPage() {
         </div>
       </div>
 
-      <div className="border-t border-base-content/10 pt-10">
-        <p className="text-base-content/60">
-          We're still putting your feed together. Thanks for your patience — we'll have something good for you soon.
+      <div className="rounded-2xl bg-secondary text-secondary-content p-8 sm:p-10">
+        <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-accent mb-4">
+          <span aria-hidden="true" className="inline-block w-1.5 h-1.5 bg-accent rotate-45" />
+          Coming soon
+        </p>
+        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight max-w-xl">
+          We're still putting your feed together.
+        </h2>
+        <p className="mt-3 text-secondary-content/70 max-w-lg">
+          Thanks for your patience — we'll have something good for you soon.
         </p>
       </div>
     </div>
