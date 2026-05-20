@@ -345,26 +345,11 @@ end
 IO.puts("Seeded #{length(venue_messages) + length(shift_messages)} chat messages")
 
 # ── POSTS ─────────────────────────────────────────────
+# Each entry includes an `hours_ago` offset so seeded posts span the last
+# week instead of stacking on a single timestamp. The `inserted_at` is
+# overridden via `update_all` since `create_timestamp` is auto-set.
 post_inputs = [
-  {james,
-   %{
-     title: "Q2 brand standards refresh",
-     body:
-       "We're rolling out updated brand standards across all properties next month. " <>
-         "Please review the attached guide and acknowledge once you've read it.",
-     requires_acknowledgement: true,
-     venue_id: nil
-   }},
-  {sofia,
-   %{
-     title: "London — new check-in flow goes live Monday",
-     body:
-       "Front desk will switch to the streamlined check-in flow starting Monday. " <>
-         "Training videos are in the shared drive. Please complete before your next shift.",
-     requires_acknowledgement: true,
-     venue_id: london_id
-   }},
-  {james,
+  {james, 168,
    %{
      title: "Welcome to Meridian Crew",
      body:
@@ -373,7 +358,16 @@ post_inputs = [
      requires_acknowledgement: false,
      venue_id: nil
    }},
-  {lucas,
+  {james, 96,
+   %{
+     title: "Q2 brand standards refresh",
+     body:
+       "We're rolling out updated brand standards across all properties next month. " <>
+         "Please review the attached guide and acknowledge once you've read it.",
+     requires_acknowledgement: true,
+     venue_id: nil
+   }},
+  {lucas, 48,
    %{
      title: "Restaurant menu update — spring tasting",
      body:
@@ -381,17 +375,31 @@ post_inputs = [
          "Please review allergen notes before your next service.",
      requires_acknowledgement: false,
      venue_id: london_id
+   }},
+  {sofia, 8,
+   %{
+     title: "London — new check-in flow goes live Monday",
+     body:
+       "Front desk will switch to the streamlined check-in flow starting Monday. " <>
+         "Training videos are in the shared drive. Please complete before your next shift.",
+     requires_acknowledgement: true,
+     venue_id: london_id
    }}
 ]
 
 posts_by_title =
-  for {actor, attrs} <- post_inputs, into: %{} do
+  for {actor, hours_ago, attrs} <- post_inputs, into: %{} do
     post =
       Post
       |> Ash.Changeset.for_create(:create, attrs, actor: actor)
       |> Ash.create!(actor: actor)
 
-    {post.title, post}
+    inserted_at = DateTime.add(now, -hours_ago * 3600, :second)
+
+    from(p in "posts", where: p.id == type(^post.id, :binary_id))
+    |> CrewPoc.Repo.update_all(set: [inserted_at: inserted_at, updated_at: inserted_at])
+
+    {post.title, %{post | inserted_at: inserted_at, updated_at: inserted_at}}
   end
 
 IO.puts("Seeded #{map_size(posts_by_title)} posts")
@@ -417,18 +425,28 @@ end
 IO.puts("Seeded #{length(ack_inputs)} acknowledgements")
 
 # ── SHOUTOUTS ─────────────────────────────────────────
+# Interleaved with post timestamps so the feed isn't a single block of
+# shoutouts followed by a single block of posts.
 shoutout_inputs = [
-  {sofia, amira, "Amira saved the evening with that last-minute suite reshuffle — total pro."},
-  {james, sofia, "Sofia's handling of the VIP arrival yesterday was textbook. Thank you."},
-  {yuki, lucas, "Lucas covered my dinner rush without breaking a sweat. Legend."},
-  {amira, yuki, "Yuki spotted the double-booking before it became a problem. Sharp eyes!"},
-  {lucas, amira, "Amira's a magician at the front desk. Guest feedback this week is glowing."}
+  {sofia, amira, 144,
+   "Amira saved the evening with that last-minute suite reshuffle — total pro."},
+  {james, sofia, 72, "Sofia's handling of the VIP arrival yesterday was textbook. Thank you."},
+  {yuki, lucas, 36, "Lucas covered my dinner rush without breaking a sweat. Legend."},
+  {amira, yuki, 18, "Yuki spotted the double-booking before it became a problem. Sharp eyes!"},
+  {lucas, amira, 2,
+   "Amira's a magician at the front desk. Guest feedback this week is glowing."}
 ]
 
-for {sender, recipient, body} <- shoutout_inputs do
-  Shoutout
-  |> Ash.Changeset.for_create(:create, %{recipient_id: recipient.id, body: body}, actor: sender)
-  |> Ash.create!(actor: sender)
+for {sender, recipient, hours_ago, body} <- shoutout_inputs do
+  shoutout =
+    Shoutout
+    |> Ash.Changeset.for_create(:create, %{recipient_id: recipient.id, body: body}, actor: sender)
+    |> Ash.create!(actor: sender)
+
+  inserted_at = DateTime.add(now, -hours_ago * 3600, :second)
+
+  from(s in "shoutouts", where: s.id == type(^shoutout.id, :binary_id))
+  |> CrewPoc.Repo.update_all(set: [inserted_at: inserted_at, updated_at: inserted_at])
 end
 
 IO.puts("Seeded #{length(shoutout_inputs)} shoutouts")
