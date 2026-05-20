@@ -23,7 +23,11 @@ config :ash_typescript,
   typed_controllers: [CrewPoc.CurrentUser],
   router: CrewPocWeb.Router,
   routes_output_file: "assets/js/routes.ts",
-  typed_channels: [CrewPocWeb.ChatConversationChannel, CrewPocWeb.UserNotificationsChannel],
+  typed_channels: [
+    CrewPocWeb.ChatConversationChannel,
+    CrewPocWeb.UserNotificationsChannel,
+    CrewPocWeb.OrgFeedChannel
+  ],
   typed_channels_output_file: "assets/js/ash_typed_channels.ts"
 
 config :ash,
@@ -69,7 +73,14 @@ config :spark,
 
 config :crew_poc,
   ecto_repos: [CrewPoc.Repo],
-  ash_domains: [CrewPoc.Accounts, CrewPoc.Venues, CrewPoc.Shifts, CrewPoc.Chat],
+  ash_domains: [
+    CrewPoc.Accounts,
+    CrewPoc.Venues,
+    CrewPoc.Shifts,
+    CrewPoc.Chat,
+    CrewPoc.Feed,
+    CrewPoc.Recognition
+  ],
   generators: [timestamp_type: :utc_datetime]
 
 # Configure the endpoint

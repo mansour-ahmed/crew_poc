@@ -3,6 +3,7 @@ defmodule CrewPocWeb.UserSocket do
 
   channel "chat:conversation:*", CrewPocWeb.ChatConversationChannel
   channel "user:*", CrewPocWeb.UserNotificationsChannel
+  channel "org:*", CrewPocWeb.OrgFeedChannel
 
   @impl true
   def connect(%{"user_id" => user_id}, socket, _connect_info)

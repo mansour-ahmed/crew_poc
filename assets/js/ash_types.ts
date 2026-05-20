@@ -161,7 +161,7 @@ export type AcknowledgementAttributesOnlySchema = {
 // Post Schema
 export type PostResourceSchema = {
   __type: "Resource";
-  __primitiveFields: "id" | "organizationId" | "venueId" | "authorId" | "title" | "body" | "originalLocale" | "autoTranslate" | "requiresAcknowledgement" | "publishedAt" | "ackCount" | "acknowledgedByActor";
+  __primitiveFields: "id" | "organizationId" | "venueId" | "authorId" | "title" | "body" | "originalLocale" | "requiresAcknowledgement" | "ackCount" | "acknowledgedByActor";
   id: UUID;
   organizationId: UUID;
   venueId: UUID | null;
@@ -169,19 +169,17 @@ export type PostResourceSchema = {
   title: string;
   body: string;
   originalLocale: string;
-  autoTranslate: boolean;
   requiresAcknowledgement: boolean;
-  publishedAt: UtcDateTime;
   ackCount: number;
   acknowledgedByActor: boolean | null;
-  feedSummary: { __type: "ComplexCalculation"; __returnType: {authorId: UUID, id: UUID, organizationId: UUID, publishedAt: UtcDateTime, title: string, venueId: UUID | null, __type: "TypedMap", __primitiveFields: "authorId" | "id" | "organizationId" | "publishedAt" | "title" | "venueId"} | null; };
+  feedSummary: { __type: "ComplexCalculation"; __returnType: {authorId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, organizationId: UUID, title: string, venueId: UUID | null, __type: "TypedMap", __primitiveFields: "authorId" | "id" | "insertedAt" | "organizationId" | "title" | "venueId"} | null; };
 };
 
 
 
 export type PostAttributesOnlySchema = {
   __type: "Resource";
-  __primitiveFields: "id" | "organizationId" | "venueId" | "authorId" | "title" | "body" | "originalLocale" | "autoTranslate" | "requiresAcknowledgement" | "publishedAt";
+  __primitiveFields: "id" | "organizationId" | "venueId" | "authorId" | "title" | "body" | "originalLocale" | "requiresAcknowledgement";
   id: UUID;
   organizationId: UUID;
   venueId: UUID | null;
@@ -189,36 +187,32 @@ export type PostAttributesOnlySchema = {
   title: string;
   body: string;
   originalLocale: string;
-  autoTranslate: boolean;
   requiresAcknowledgement: boolean;
-  publishedAt: UtcDateTime;
 };
 
 
 // Shoutout Schema
 export type ShoutoutResourceSchema = {
   __type: "Resource";
-  __primitiveFields: "id" | "organizationId" | "senderId" | "recipientId" | "body" | "publishedAt";
+  __primitiveFields: "id" | "organizationId" | "senderId" | "recipientId" | "body";
   id: UUID;
   organizationId: UUID;
   senderId: UUID;
   recipientId: UUID;
   body: string;
-  publishedAt: UtcDateTime;
-  shoutoutSummary: { __type: "ComplexCalculation"; __returnType: {body: string, id: UUID, publishedAt: UtcDateTime, recipientId: UUID, senderId: UUID, __type: "TypedMap", __primitiveFields: "body" | "id" | "publishedAt" | "recipientId" | "senderId"} | null; };
+  shoutoutSummary: { __type: "ComplexCalculation"; __returnType: {body: string, id: UUID, insertedAt: UtcDateTimeUsec, recipientId: UUID, senderId: UUID, __type: "TypedMap", __primitiveFields: "body" | "id" | "insertedAt" | "recipientId" | "senderId"} | null; };
 };
 
 
 
 export type ShoutoutAttributesOnlySchema = {
   __type: "Resource";
-  __primitiveFields: "id" | "organizationId" | "senderId" | "recipientId" | "body" | "publishedAt";
+  __primitiveFields: "id" | "organizationId" | "senderId" | "recipientId" | "body";
   id: UUID;
   organizationId: UUID;
   senderId: UUID;
   recipientId: UUID;
   body: string;
-  publishedAt: UtcDateTime;
 };
 
 
@@ -655,24 +649,9 @@ export type PostFilterInput = {
     in?: Array<string>;
   };
 
-  autoTranslate?: {
-    eq?: boolean;
-    notEq?: boolean;
-  };
-
   requiresAcknowledgement?: {
     eq?: boolean;
     notEq?: boolean;
-  };
-
-  publishedAt?: {
-    eq?: UtcDateTime;
-    notEq?: UtcDateTime;
-    greaterThan?: UtcDateTime;
-    greaterThanOrEqual?: UtcDateTime;
-    lessThan?: UtcDateTime;
-    lessThanOrEqual?: UtcDateTime;
-    in?: Array<UtcDateTime>;
   };
 
   acknowledgedByActor?: {
@@ -682,9 +661,9 @@ export type PostFilterInput = {
   };
 
   feedSummary?: {
-    eq?: {authorId: UUID, id: UUID, organizationId: UUID, publishedAt: UtcDateTime, title: string, venueId: UUID | null, __type: "TypedMap", __primitiveFields: "authorId" | "id" | "organizationId" | "publishedAt" | "title" | "venueId"};
-    notEq?: {authorId: UUID, id: UUID, organizationId: UUID, publishedAt: UtcDateTime, title: string, venueId: UUID | null, __type: "TypedMap", __primitiveFields: "authorId" | "id" | "organizationId" | "publishedAt" | "title" | "venueId"};
-    in?: Array<{authorId: UUID, id: UUID, organizationId: UUID, publishedAt: UtcDateTime, title: string, venueId: UUID | null, __type: "TypedMap", __primitiveFields: "authorId" | "id" | "organizationId" | "publishedAt" | "title" | "venueId"}>;
+    eq?: {authorId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, organizationId: UUID, title: string, venueId: UUID | null, __type: "TypedMap", __primitiveFields: "authorId" | "id" | "insertedAt" | "organizationId" | "title" | "venueId"};
+    notEq?: {authorId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, organizationId: UUID, title: string, venueId: UUID | null, __type: "TypedMap", __primitiveFields: "authorId" | "id" | "insertedAt" | "organizationId" | "title" | "venueId"};
+    in?: Array<{authorId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, organizationId: UUID, title: string, venueId: UUID | null, __type: "TypedMap", __primitiveFields: "authorId" | "id" | "insertedAt" | "organizationId" | "title" | "venueId"}>;
     isNil?: boolean;
   };
 
@@ -736,20 +715,10 @@ export type ShoutoutFilterInput = {
     in?: Array<string>;
   };
 
-  publishedAt?: {
-    eq?: UtcDateTime;
-    notEq?: UtcDateTime;
-    greaterThan?: UtcDateTime;
-    greaterThanOrEqual?: UtcDateTime;
-    lessThan?: UtcDateTime;
-    lessThanOrEqual?: UtcDateTime;
-    in?: Array<UtcDateTime>;
-  };
-
   shoutoutSummary?: {
-    eq?: {body: string, id: UUID, publishedAt: UtcDateTime, recipientId: UUID, senderId: UUID, __type: "TypedMap", __primitiveFields: "body" | "id" | "publishedAt" | "recipientId" | "senderId"};
-    notEq?: {body: string, id: UUID, publishedAt: UtcDateTime, recipientId: UUID, senderId: UUID, __type: "TypedMap", __primitiveFields: "body" | "id" | "publishedAt" | "recipientId" | "senderId"};
-    in?: Array<{body: string, id: UUID, publishedAt: UtcDateTime, recipientId: UUID, senderId: UUID, __type: "TypedMap", __primitiveFields: "body" | "id" | "publishedAt" | "recipientId" | "senderId"}>;
+    eq?: {body: string, id: UUID, insertedAt: UtcDateTimeUsec, recipientId: UUID, senderId: UUID, __type: "TypedMap", __primitiveFields: "body" | "id" | "insertedAt" | "recipientId" | "senderId"};
+    notEq?: {body: string, id: UUID, insertedAt: UtcDateTimeUsec, recipientId: UUID, senderId: UUID, __type: "TypedMap", __primitiveFields: "body" | "id" | "insertedAt" | "recipientId" | "senderId"};
+    in?: Array<{body: string, id: UUID, insertedAt: UtcDateTimeUsec, recipientId: UUID, senderId: UUID, __type: "TypedMap", __primitiveFields: "body" | "id" | "insertedAt" | "recipientId" | "senderId"}>;
     isNil?: boolean;
   };
 
@@ -937,10 +906,10 @@ export type MessageFilterField = (typeof messageFilterFields)[number];
 export const acknowledgementFilterFields = ["id", "organizationId", "postId", "userId", "ackSummary"] as const;
 export type AcknowledgementFilterField = (typeof acknowledgementFilterFields)[number];
 
-export const postFilterFields = ["id", "organizationId", "venueId", "authorId", "title", "body", "originalLocale", "autoTranslate", "requiresAcknowledgement", "publishedAt", "acknowledgedByActor", "feedSummary", "ackCount"] as const;
+export const postFilterFields = ["id", "organizationId", "venueId", "authorId", "title", "body", "originalLocale", "requiresAcknowledgement", "acknowledgedByActor", "feedSummary", "ackCount"] as const;
 export type PostFilterField = (typeof postFilterFields)[number];
 
-export const shoutoutFilterFields = ["id", "organizationId", "senderId", "recipientId", "body", "publishedAt", "shoutoutSummary"] as const;
+export const shoutoutFilterFields = ["id", "organizationId", "senderId", "recipientId", "body", "shoutoutSummary"] as const;
 export type ShoutoutFilterField = (typeof shoutoutFilterFields)[number];
 
 export const shiftFilterFields = ["id", "name", "startsAt", "endsAt", "organizationId", "venueId"] as const;
@@ -974,10 +943,10 @@ export type MessageSortField = (typeof messageSortFields)[number];
 export const acknowledgementSortFields = ["id", "organizationId", "postId", "userId", "ackSummary"] as const;
 export type AcknowledgementSortField = (typeof acknowledgementSortFields)[number];
 
-export const postSortFields = ["id", "organizationId", "venueId", "authorId", "title", "body", "originalLocale", "autoTranslate", "requiresAcknowledgement", "publishedAt", "acknowledgedByActor", "feedSummary", "ackCount"] as const;
+export const postSortFields = ["id", "organizationId", "venueId", "authorId", "title", "body", "originalLocale", "requiresAcknowledgement", "acknowledgedByActor", "feedSummary", "ackCount"] as const;
 export type PostSortField = (typeof postSortFields)[number];
 
-export const shoutoutSortFields = ["id", "organizationId", "senderId", "recipientId", "body", "publishedAt", "shoutoutSummary"] as const;
+export const shoutoutSortFields = ["id", "organizationId", "senderId", "recipientId", "body", "shoutoutSummary"] as const;
 export type ShoutoutSortField = (typeof shoutoutSortFields)[number];
 
 export const shiftSortFields = ["id", "name", "startsAt", "endsAt", "organizationId", "venueId"] as const;
@@ -1421,8 +1390,8 @@ export type ValidationResult =
 
 export type AcknowledgementAddedPayload = {id: UUID, organizationId: UUID, postId: UUID, userId: UUID};
 export type MessageCreatedPayload = {authorId: UUID, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec};
-export type PostCreatedPayload = {authorId: UUID, id: UUID, organizationId: UUID, publishedAt: UtcDateTime, title: string, venueId: UUID | null};
-export type ShoutoutCreatedPayload = {body: string, id: UUID, publishedAt: UtcDateTime, recipientId: UUID, senderId: UUID};
+export type PostCreatedPayload = {authorId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, organizationId: UUID, title: string, venueId: UUID | null};
+export type ShoutoutCreatedPayload = {body: string, id: UUID, insertedAt: UtcDateTimeUsec, recipientId: UUID, senderId: UUID};
 export type UnreadChangedPayload = {conversationId: UUID, lastReadAt: UtcDateTime | null, userId: UUID};
 
 // Channel types for CrewPocWeb.ChatConversationChannel

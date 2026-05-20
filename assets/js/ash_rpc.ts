@@ -735,6 +735,73 @@ export async function validateListConversations(
 }
 
 
+export type ListPinnedConversationsFields = UnifiedFieldSelection<ConversationResourceSchema>[];
+export type InferListPinnedConversationsResult<
+  Fields extends ListPinnedConversationsFields,
+> = Array<InferResult<ConversationResourceSchema, Fields>>;
+
+export type ListPinnedConversationsResult<Fields extends ListPinnedConversationsFields> = | { success: true; data: InferListPinnedConversationsResult<Fields>; }
+| { success: false; errors: AshRpcError[]; }
+
+;
+
+/**
+ * Read Conversation records
+ *
+ * @ashActionType :read
+ */
+export async function listPinnedConversations<Fields extends ListPinnedConversationsFields>(
+  config: {
+  tenant?: string;
+  fields: Fields;
+  filter?: ConversationFilterInput;
+  sort?: SortString<ConversationSortField> | SortString<ConversationSortField>[];
+  headers?: Record<string, string>;
+  fetchOptions?: RequestInit;
+  customFetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+}
+): Promise<ListPinnedConversationsResult<Fields>> {
+  const payload = {
+    action: "list_pinned_conversations",
+    ...(config.tenant !== undefined && { tenant: config.tenant }),
+    ...(config.fields !== undefined && { fields: config.fields }),
+    ...(config.filter && { filter: config.filter }),
+    ...(config.sort && { sort: Array.isArray(config.sort) ? config.sort.join(",") : config.sort })
+  };
+
+  return executeActionRpcRequest<ListPinnedConversationsResult<Fields>>(
+    payload,
+    config
+  );
+}
+
+
+/**
+ * Validate: Read Conversation records
+ *
+ * @ashActionType :read
+ * @validation true
+ */
+export async function validateListPinnedConversations(
+  config: {
+  tenant?: string;
+  headers?: Record<string, string>;
+  fetchOptions?: RequestInit;
+  customFetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+}
+): Promise<ValidationResult> {
+  const payload = {
+    action: "list_pinned_conversations",
+    ...(config.tenant !== undefined && { tenant: config.tenant })
+  };
+
+  return executeValidationRpcRequest<ValidationResult>(
+    payload,
+    config
+  );
+}
+
+
 export type ListConversationMembershipsFields = UnifiedFieldSelection<ConversationMembershipResourceSchema>[];
 
 
@@ -1229,7 +1296,6 @@ export type CreatePostInput = {
   title: string;
   body: string;
   originalLocale?: string;
-  autoTranslate?: boolean;
   requiresAcknowledgement?: boolean;
   venueId?: UUID | null;
 };

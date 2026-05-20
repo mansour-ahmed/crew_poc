@@ -328,4 +328,120 @@ defmodule CrewPoc.Generator do
 
     {conversation_id, author}
   end
+
+  #############
+  ### Posts ###
+  #############
+
+  @spec post(keyword()) :: Ash.Generator.t()
+  def post(opts \\ []) do
+    organization_id =
+      opts[:organization_id] ||
+        once(:default_organization_id, fn -> (organization() |> generate()).id end)
+
+    author =
+      case opts[:author_id] do
+        nil ->
+          [organization_id: organization_id]
+          |> user()
+          |> generate()
+
+        author_id ->
+          Ash.get!(CrewPoc.Accounts.User, author_id, authorize?: false)
+      end
+
+    changeset_generator(
+      CrewPoc.Feed.Post,
+      :create,
+      defaults: [
+        title: sequence(:post_title, &"Post title #{&1}"),
+        body: sequence(:post_body, &"Post body #{&1}"),
+        original_locale: "en",
+        requires_acknowledgement: false,
+        venue_id: opts[:venue_id]
+      ],
+      overrides: Keyword.drop(opts, [:organization_id, :author_id]),
+      actor: author,
+      authorize?: false
+    )
+  end
+
+  ########################
+  ### Acknowledgements ###
+  ########################
+
+  @spec acknowledgement(keyword()) :: Ash.Generator.t()
+  def acknowledgement(opts \\ []) do
+    organization_id =
+      opts[:organization_id] ||
+        once(:default_organization_id, fn -> (organization() |> generate()).id end)
+
+    post_id =
+      opts[:post_id] ||
+        [organization_id: organization_id]
+        |> post()
+        |> generate()
+        |> Map.fetch!(:id)
+
+    actor =
+      case opts[:user_id] do
+        nil ->
+          [organization_id: organization_id]
+          |> user()
+          |> generate()
+
+        user_id ->
+          Ash.get!(CrewPoc.Accounts.User, user_id, authorize?: false)
+      end
+
+    changeset_generator(
+      CrewPoc.Feed.Acknowledgement,
+      :create,
+      defaults: [post_id: post_id],
+      overrides: Keyword.drop(opts, [:organization_id, :user_id, :post_id]),
+      actor: actor,
+      authorize?: false
+    )
+  end
+
+  #################
+  ### Shoutouts ###
+  #################
+
+  @spec shoutout(keyword()) :: Ash.Generator.t()
+  def shoutout(opts \\ []) do
+    organization_id =
+      opts[:organization_id] ||
+        once(:default_organization_id, fn -> (organization() |> generate()).id end)
+
+    sender =
+      case opts[:sender_id] do
+        nil ->
+          [organization_id: organization_id]
+          |> user()
+          |> generate()
+
+        sender_id ->
+          Ash.get!(CrewPoc.Accounts.User, sender_id, authorize?: false)
+      end
+
+    recipient_id =
+      opts[:recipient_id] ||
+        [organization_id: organization_id]
+        |> user()
+        |> generate()
+        |> Map.fetch!(:id)
+
+    changeset_generator(
+      CrewPoc.Recognition.Shoutout,
+      :create,
+      defaults: [
+        recipient_id: recipient_id,
+        body: sequence(:shoutout_body, &"Great job #{&1}")
+      ],
+      overrides: Keyword.drop(opts, [:organization_id, :sender_id]),
+      actor: sender,
+      authorize?: false
+    )
+  end
 end
