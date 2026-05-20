@@ -19,7 +19,6 @@ This document is the source of truth for the POC. It is iterated section by sect
 - [ ] Auto-translate toggle per post
 - [ ] Wins of the week / venue leaderboards
 - [ ] Birthdays & work anniversaries surfaced in feed
-- [ ] Pulse surveys (lightweight: 1 question, 1–5 scale)
 - [ ] "Acknowledge" button on announcements → admin analytics
 - [ ] Searchable across posts and shoutouts
 
@@ -32,12 +31,15 @@ This document is the source of truth for the POC. It is iterated section by sect
 - ~~1:1 direct messages~~ — chat is venue + shift channels only.
 - ~~Free-form group chats~~ — no user-created groups.
 - ~~Searchable chat~~ — search covers posts + shoutouts only.
+- ~~Pulse surveys (lightweight: 1 question, 1–5 scale)~~ — dropped from POC scope; the `Engagement` domain (§3.6 / §7.6) and Slice C (§9.2) are preserved below as **CANCELLED** for future revival.
 
 ---
 
 ## 2. Domain Map
 
-Seven Ash domains, layered by dependency. Each is a candidate for an isolated work-stream.
+Six Ash domains, layered by dependency. Each is a candidate for an isolated work-stream.
+(`Engagement` was originally a seventh domain — pulse surveys — but is cancelled for the POC.
+See §3.6 / §7.6 / Slice C in §9.2 for the preserved-but-out-of-scope spec.)
 
 ```
             ┌──────────────────┐
@@ -51,15 +53,17 @@ Seven Ash domains, layered by dependency. Each is a candidate for an isolated wo
             ┌────────┴─────────┐
             │      Shifts      │   scheduled work blocks, staff-to-shift mapping
             └────────┬─────────┘
-        ┌────────────┼───────────────┬──────────────┐
-        │            │               │              │
-   ┌────┴───┐   ┌────┴─────┐   ┌─────┴────┐   ┌─────┴────┐
-   │  Feed  │   │Recognition│   │Engagement│   │   Chat   │
-   └────────┘   └──────────┘   └──────────┘   └──────────┘
-   posts/acks   shoutouts      pulse surveys  venue + shift
-                                                channels +
-                                                messages
+        ┌────────────┼──────────────┐
+        │            │              │
+   ┌────┴───┐   ┌────┴─────┐   ┌────┴─────┐
+   │  Feed  │   │Recognition│  │   Chat   │
+   └────────┘   └──────────┘   └──────────┘
+   posts/acks   shoutouts      venue + shift
+                                channels +
+                                messages
 ```
+
+Cancelled (out of POC scope): `Engagement` (pulse surveys + responses).
 
 Cross-cutting services (not domains):
 - **Translation** — wraps an external API; caches translations against posts.
@@ -104,7 +108,7 @@ Avatars are **not stored**. The frontend renders a deterministic colored circle 
 **Auth — skipped for the POC.**
 - No AshAuthentication. Instead: a user picker in the top bar lets you switch the active user. Selection persists in a cookie.
 - A `CrewPocWeb.Plugs.CurrentUser` plug reads the cookie, loads the user, sets `conn.assigns.current_user`.
-- For typed channels: `UserSocket.connect/2` reads the same cookie (or a query param on the websocket URL) and stuffs `current_user_id` into the socket assigns.
+- For typed channels (added in Phase 2 when chat/feed realtime is wired up): `UserSocket.connect/2` will read the same signed cookie via `Plug.Crypto.verify/4` and stuff `current_user_id` into the socket assigns.
 - Every Ash action call passes `actor: conn.assigns.current_user`. Policies still run — we just trust the cookie instead of a session.
 - Trade-off acknowledged: this is a demo affordance, not real auth. Easy to swap in `ash_authentication` later (it's a single drop-in).
 
@@ -291,7 +295,9 @@ Peer-to-peer kudos. Plain text only — no values tagging in the POC.
 
 ---
 
-### 3.6 Engagement (Pulse Surveys)
+### 3.6 Engagement (Pulse Surveys) — **CANCELLED for POC**
+
+> **Status: cancelled.** The pulse-surveys feature is dropped from the POC. The spec below is preserved verbatim so we can revive the domain in a follow-up without redesigning from scratch. Nothing in §3.6 should be implemented during the current scope. Feed surface integration in §3.4 (the "active survey card") is also out of scope until this is revived.
 
 Lightweight check-ins. Admin asks the org "How are things this week?", staff respond, admin sees aggregate.
 
@@ -526,9 +532,9 @@ Chat messages are **not** searchable in the POC.
 
 ### 4.4 Authorization
 Three roles via `User.role`:
-- `:admin` — full org control; posts org-wide announcements; creates pulse surveys.
+- `:admin` — full org control; posts org-wide announcements. (Originally also created pulse surveys — cancelled.)
 - `:manager` — posts venue-scoped announcements for venues they belong to.
-- `:staff` — reads feed; gives shoutouts; responds to pulse; participates in chat.
+- `:staff` — reads feed; gives shoutouts; participates in chat. (Originally also responded to pulse — cancelled.)
 
 Policies live on the resource. Standard helpers: `can_post_org_wide?`, `can_post_to_venue?`.
 
@@ -537,7 +543,7 @@ Policies live on the resource. Standard helpers: `can_post_org_wide?`, `can_post
 - Three channels in scope:
   - `chat:conversation:*` — per-conversation chat events (`message_created`, `read_advanced`). Messages are immutable so no update/delete events.
   - `user:*` — per-user firehose for unread badges across conversations (`unread_changed`).
-  - `org:*` — live feed updates: `post_created`, `acknowledgement_added`, `shoutout_created`, `pulse_response_recorded`. Lets the feed refresh without polling.
+  - `org:*` — live feed updates: `post_created`, `acknowledgement_added`, `shoutout_created`. Lets the feed refresh without polling. (`pulse_response_recorded` was planned here but is cancelled along with Engagement.)
 - Requires Ash >= 3.21.1. Pin that in `mix.exs`.
 - Channel join callbacks own authorization — the typed-channel layer doesn't enforce it.
 
@@ -554,20 +560,20 @@ Most of the original open list has been resolved through the walk-through. Remai
 _All major decisions resolved. Remaining items are implementation details to settle as we build._
 
 **Resolved during this iteration:**
-- Seed shape: 1 org (Meridian Hotels & Resorts), 3 international venues (London, Dubai, New York), 20 users with globally diverse names across **fi / pt / es** locales, 5 shifts, 10 announcements, 15 shoutouts, 1 active pulse survey.
+- Seed shape: 1 org (Meridian Hotels & Resorts), 3 international venues (London, Dubai, New York), 20 users with globally diverse names across **fi / pt / es** locales, 5 shifts, 10 announcements, 15 shoutouts. (~~1 active pulse survey~~ removed — Engagement is cancelled.)
 - LLM provider: **OpenAI** via ReqLLM (`gpt-4o-mini` for translation). `OPENAI_API_KEY` in env.
 - Single org per user, no Membership resource → use `User.role`.
 - Venue assignment is flat m2m, no primary/secondary kind.
 - Shifts: separate domain, seeded only, no admin UI.
 - Chat: venue + shift channels only, no DMs, no group chats, no chat search, no mentions, no chat translation. Read receipts + unread badges kept.
-- Feed: merged stream, per-post translate toggle, inline ack count (no admin dashboard).
-- Pulse: scale configurable, org-wide only, one active at a time, no comment field, no scheduling.
+- Feed: merged stream (posts + shoutouts + celebrations only — no active-pulse card), per-post translate toggle, inline ack count (no admin dashboard).
+- ~~Pulse: scale configurable, org-wide only, one active at a time, no comment field, no scheduling.~~ — Engagement domain cancelled for POC.
 - Recognition: plain text, no values tagging. Leaderboard = 7d only.
 - Auth: skipped — cookie-backed user picker.
 - Avatars: deterministic initials, no upload.
 - Translation: real via `ash_ai`, no stub.
 - Search: per-resource `:search` action with `contains/2` + pg_trgm GIN index.
-- Realtime: `AshTypescript.TypedChannel` for chat (per-conversation + per-user) and feed (org/venue).
+- Realtime: `AshTypescript.TypedChannel` for chat (per-conversation + per-user) and feed (org/venue). No pulse events on the `org:*` channel.
 
 ---
 
@@ -709,7 +715,9 @@ _All major decisions resolved. Remaining items are implementation details to set
 
 ---
 
-### 7.6 Engagement
+### 7.6 Engagement — **CANCELLED for POC**
+
+> **Status: cancelled.** No actions, policies, or constraints in §7.6 are to be implemented. The spec is preserved for revival.
 
 #### `PulseSurvey`
 - **Actions:**
@@ -797,8 +805,8 @@ A handful of read actions exist purely to power specific frontend surfaces. They
 | Action | On | Shape | Used by |
 |---|---|---|---|
 | `Accounts.User.celebrating_today` | `User` | filter `birthday_today? or work_anniversary_today?`; returns users | `<FeedPage>` (celebration cards) |
-| `Engagement.PulseSurvey.active` | `PulseSurvey` | filter `closes_at > now()`; limit 1 | `<FeedPage>` (active pulse card), `<PulseAdminPage>` |
-| `Engagement.PulseSurvey.aggregate` | `PulseSurvey` | read by id, load `response_count` + `average_score` + `score_distribution` calc | `<PulseAdminPage>` |
+| ~~`Engagement.PulseSurvey.active`~~ | ~~`PulseSurvey`~~ | ~~filter `closes_at > now()`; limit 1~~ | ~~`<FeedPage>` (active pulse card), `<PulseAdminPage>`~~ — **CANCELLED** |
+| ~~`Engagement.PulseSurvey.aggregate`~~ | ~~`PulseSurvey`~~ | ~~read by id, load `response_count` + `average_score` + `score_distribution` calc~~ | ~~`<PulseAdminPage>`~~ — **CANCELLED** |
 | `Recognition.Shoutout.top_recipients_this_week` | `Shoutout` | already specified in §7.5 | `<LeaderboardPanel>` |
 | `Chat.Conversation.list_for_actor` | `Conversation` | the default `:read` action already filters via the membership policy; expose with a code-interface alias `list_for_actor` for clarity | `<ConversationSidebar>` |
 | `Chat.Message.list_for_conversation` | `Message` | argument `:conversation_id`; filter + limit; sort `inserted_at` desc | `<ConversationView>` |
@@ -837,7 +845,7 @@ These don't need separate sections in §7 — they're conventional reads. The li
 | `/` | `<FeedPage>` | any |
 | `/posts/new` | `<PostComposePage>` | `admin` or `manager` (`manager` can pick venue) |
 | `/search?q=` | `<SearchPage>` | any |
-| `/admin/pulse` | `<PulseAdminPage>` | any (policies skipped per §7.6) |
+| ~~`/admin/pulse`~~ | ~~`<PulseAdminPage>`~~ | **CANCELLED** — Engagement out of scope |
 | `/chat` | `<ChatLayout>` → redirect to first conversation | any |
 | `/chat/:conversationId` | `<ChatLayout>` → `<ConversationView>` | any (membership-checked server-side) |
 
@@ -850,7 +858,7 @@ Role gates are component-level (render a "not authorized" placeholder rather tha
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  TopBar                                                      │
-│  ┌──────────────┐  Feed | Chat | Search | Admin              │
+│  ┌──────────────┐  Feed | Chat | Search                       │
 │  │ org name     │                              [UserPicker] │
 │  └──────────────┘                                           │
 ├─────────────────────────────────────────────────────────────┤
@@ -862,8 +870,8 @@ Role gates are component-level (render a "not authorized" placeholder rather tha
 
 **`<TopBar>`** — sticky, persistent.
 - Org name + logo placeholder (left).
-- Nav links: Feed / Chat / Search / Admin (admin shown only to admins, but rendering it for everyone is fine since the page itself gates).
-- `<UserPicker>` on the right — dropdown listing all seeded users. Selecting one POSTs to `/api/switch_user`, updates the cookie, hard-refreshes. (Simpler than mutating React state mid-flight.)
+- Nav links: Feed / Chat / Search. (The Admin link was originally planned for `/admin/pulse`; cancelled along with Engagement.)
+- `<UserPicker>` on the right — dropdown listing all seeded users. Selecting one writes `_crew_poc_user_id` directly to `document.cookie` and hard-refreshes. No server endpoint needed.
 
 **`<ChatLayout>`** is a nested layout for `/chat/*` only:
 
@@ -892,10 +900,10 @@ For each page: components rendered, RPC actions called, realtime subscriptions.
 
 | Element | What it does |
 |---|---|
-| Components | `<ActivePulseCard>`, `<ComposeButton>` (admin/manager only), `<FeedStream>` rendering `<PostCard>` / `<ShoutoutCard>` / `<CelebrationCard>` / `<LeaderboardPanel>` (sidebar) |
-| RPC reads | `Feed.list_items(limit, offset)` (paginated merged stream), `Recognition.top_recipients_this_week`, `Engagement.active_survey`, `Accounts.todays_celebrations` |
-| RPC mutations | `Acknowledgement.create(post_id)`, `PulseResponse.create(survey_id, score)`, `Shoutout.create(...)` from a quick-shoutout modal |
-| Realtime | Joins `org:#{org_id}` typed channel; events `post_created`, `acknowledgement_added`, `shoutout_created`, `pulse_response_recorded` each invalidate the relevant query keys |
+| Components | `<ComposeButton>` (admin/manager only), `<FeedStream>` rendering `<PostCard>` / `<ShoutoutCard>` / `<CelebrationCard>` / `<LeaderboardPanel>` (sidebar). ~~`<ActivePulseCard>`~~ — cancelled. |
+| RPC reads | `Feed.list_items(limit, offset)` (paginated merged stream), `Recognition.top_recipients_this_week`, `Accounts.todays_celebrations`. ~~`Engagement.active_survey`~~ — cancelled. |
+| RPC mutations | `Acknowledgement.create(post_id)`, `Shoutout.create(...)` from a quick-shoutout modal. ~~`PulseResponse.create(survey_id, score)`~~ — cancelled. |
+| Realtime | Joins `org:#{org_id}` typed channel; events `post_created`, `acknowledgement_added`, `shoutout_created` each invalidate the relevant query keys. ~~`pulse_response_recorded`~~ — cancelled. |
 | Translation | On render, `<PostCard>` calls `Feed.ensure_translation(post_id, locale)` if `auto_translate && reader.locale != original_locale`. Suspense-friendly. |
 
 #### `<PostComposePage>` (`/posts/new`)
@@ -915,14 +923,16 @@ For each page: components rendered, RPC actions called, realtime subscriptions.
 | RPC | `Search.global(query)` — backend fans out to `Feed.search_posts` + `Recognition.search_shoutouts` and merges by `inserted_at` |
 | Realtime | None |
 
-#### `<PulseAdminPage>` (`/admin/pulse`)
+#### ~~`<PulseAdminPage>` (`/admin/pulse`)~~ — **CANCELLED**
+
+> Page, components, hooks and the `org:*` pulse subscription below are all out of scope for the POC. Preserved for future revival.
 
 | Element | What it does |
 |---|---|
-| Components | `<ActiveSurveyForm>` (when no active survey, show creation form), `<ActiveSurveyResults>` (when one exists: prompt + aggregate + distribution chart), `<PastSurveys>` (list of closed) |
-| RPC | `PulseSurvey.list`, `PulseSurvey.create`, `PulseSurvey.aggregate(survey_id)` |
-| Realtime | Joins `org:#{org_id}`; `pulse_response_recorded` invalidates the active-survey aggregate query |
-| Charting | Single `<DistributionBars>` — daisyUI progress bars rendered per score bucket. No chart library. |
+| Components | ~~`<ActiveSurveyForm>` (when no active survey, show creation form), `<ActiveSurveyResults>` (when one exists: prompt + aggregate + distribution chart), `<PastSurveys>` (list of closed)~~ |
+| RPC | ~~`PulseSurvey.list`, `PulseSurvey.create`, `PulseSurvey.aggregate(survey_id)`~~ |
+| Realtime | ~~Joins `org:#{org_id}`; `pulse_response_recorded` invalidates the active-survey aggregate query~~ |
+| Charting | ~~Single `<DistributionBars>` — daisyUI progress bars rendered per score bucket. No chart library.~~ |
 
 #### `<ChatLayout>` + `<ConversationView>` (`/chat/:conversationId`)
 
@@ -948,7 +958,7 @@ For each page: components rendered, RPC actions called, realtime subscriptions.
 | `<CelebrationCard user kind />` | feed | "🎂 Anna turns N today" / "🎉 Pedro celebrates N years" |
 | `<AckButton post />` | PostCard | Disabled when already acked; shows count inline |
 | `<TranslateToggle />` | PostForm | Checkbox in compose form |
-| `<ActivePulseCard survey />` | FeedPage | The card that appears at the top of the feed; collapses after response |
+| ~~`<ActivePulseCard survey />`~~ | ~~FeedPage~~ | **CANCELLED** — Engagement out of scope |
 | `<LeaderboardPanel />` | FeedPage (sidebar) | Top-5 recipients this week |
 | `<MessageBubble message me />` | MessageList | daisyUI `chat` component variants |
 | `<MessageComposer onSend />` | ChatLayout | Textarea + send button; Enter submits, Shift+Enter newline |
@@ -994,7 +1004,7 @@ onOrgChannelMessages(channel, {
     // optimistic: bump the ack count on the matching PostCard
     queryClient.setQueryData(["feed"], (old) => bumpAck(old, payload));
   },
-  pulse_response_recorded: () => queryClient.invalidateQueries({ queryKey: ["pulse", "aggregate"] }),
+  // pulse_response_recorded handler removed — Engagement is cancelled for the POC.
 });
 ```
 
@@ -1006,7 +1016,7 @@ Mutations follow the same shape with `useMutation` + optimistic `setQueryData`.
 
 | Channel | Joined when | Events handled |
 |---|---|---|
-| `org:#{org_id}` | App boot, after `current_user` loads | `post_created`, `acknowledgement_added`, `shoutout_created`, `pulse_response_recorded` |
+| `org:#{org_id}` | App boot, after `current_user` loads | `post_created`, `acknowledgement_added`, `shoutout_created`. (~~`pulse_response_recorded`~~ — cancelled with Engagement.) |
 | `user:#{user_id}` | App boot, after `current_user` loads | `unread_changed` → updates `<UnreadBadge>` per conversation |
 | `chat:conversation:#{id}` | `<ConversationView>` mounts; left when unmounts | `message_created`, `read_advanced` |
 
@@ -1016,7 +1026,7 @@ All three channel clients are generated by `AshTypescript.TypedChannel` codegen 
 
 ## 9. Work split for parallel agents
 
-Three phases. Phase 1 is sequential; Phase 2 fans out into three independent vertical slices; Phase 3 stitches everything together.
+Three phases. Phase 1 is sequential; Phase 2 fans out into two independent vertical slices (originally three — Slice C / Engagement is cancelled); Phase 3 stitches everything together.
 
 ```
 ┌─────────────────────────────────────────┐
@@ -1025,14 +1035,14 @@ Three phases. Phase 1 is sequential; Phase 2 fans out into three independent ver
 │  frontend shell · minimal seeds          │
 └────────────────┬────────────────────────┘
                  │
-   ┌─────────────┼─────────────┬──────────────┐
-   ▼             ▼             ▼              │
-┌──────┐    ┌──────┐    ┌────────────┐        │
-│ A    │    │ B    │    │ C          │  ◄─── Phase 2 (parallel)
+   ┌─────────────┼─────────────┐
+   ▼             ▼             ▼ (cancelled)
+┌──────┐    ┌──────┐    ┌────────────┐
+│ A    │    │ B    │    │ ~~C~~      │  ◄─── Phase 2 (parallel)
 │ Feed │    │ Chat │    │ Engagement │
 └──┬───┘    └──┬───┘    └─────┬──────┘
-   │           │              │
-   └───────────┼──────────────┘
+   │           │              :
+   └───────────┘              (out of scope)
                ▼
 ┌─────────────────────────────────────────┐
 │  Phase 3 — Integration                   │
@@ -1052,9 +1062,7 @@ Everything downstream assumes this is done. Don't fan out before it's green.
 4. **Accounts domain**: `Organization` (id, name, slug, timestamps), `User` (all fields per §3.1). Code interface + RPC actions for `User.list` and `User.get`.
 5. **Venues domain**: `Venue`, `VenueMembership` per §3.2. Code interface + RPC for `Venue.list` and `VenueMembership.list_for_user`. **Stub the after-action hook** (`Venue.create` → `Conversation.create_venue_channel`) to a no-op for now — Slice B will replace it.
 6. `CrewPocWeb.Plugs.CurrentUser` — reads `_crew_poc_user_id` cookie, loads `User` by id, sets `conn.assigns.current_user`. Add to browser pipeline.
-7. `CrewPocWeb.UserSocket.connect/2` — reads the same cookie (or `user_id` query param) into socket assigns.
-8. `CrewPocWeb.SwitchUserController` — POST `/api/switch_user` sets the cookie and 204s. Frontend hard-reloads after.
-9. **Minimal seed**: 1 org, 5 users (mixed roles + locales fi/pt/es), 2 venues, all 5 users assigned to venue 1 and 2 users also to venue 2.
+7. **Minimal seed**: 1 org, 5 users (mixed roles + locales fi/pt/es), 2 venues, all 5 users assigned to venue 1 and 2 users also to venue 2.
 
 **Frontend**
 10. Install: `react-router-dom`, `@tanstack/react-query`, `react-hook-form`, `zod`, `@hookform/resolvers`.
@@ -1096,7 +1104,7 @@ Each slice is end-to-end: domain + actions + frontend. Slices don't import from 
 - Pages: `<FeedPage>` (`/`), `<PostComposePage>` (`/posts/new`), `<SearchPage>` (`/search`).
 - Components: `<PostCard>`, `<ShoutoutCard>`, `<CelebrationCard>`, `<AckButton>`, `<LeaderboardPanel>`, `<TranslateToggle>`, `<SearchInput>`, `<SearchResults>`, `<ComposeButton>`, `<PostForm>` (react-hook-form + zod).
 - Hooks: `useFeed`, `usePostMutation`, `useAckMutation`, `useShoutoutMutation`, `useSearch`, `useLeaderboard`, `useCelebrations`.
-- Channel wiring: `org:#{org_id}` joined at app boot in a shared module — Slice A owns it, Slices B/C subscribe to it later for `pulse_response_recorded` etc.
+- Channel wiring: `org:#{org_id}` joined at app boot in a shared module — Slice A owns it. (Originally Slice C would extend it with `pulse_response_recorded`; cancelled.)
 
 **Definition of done**
 - Compose a post, see it appear in the feed live (without refresh) for another seeded user logged in another browser/profile.
@@ -1148,7 +1156,9 @@ Each slice is end-to-end: domain + actions + frontend. Slices don't import from 
 
 ---
 
-#### Slice C — Engagement
+#### ~~Slice C — Engagement~~ — **CANCELLED**
+
+> **Status: cancelled.** Slice C is not part of the POC. No backend, frontend, or seed work for Engagement should be done. The block below is preserved verbatim for future revival. Slice A no longer ships an `<ActivePulseCard>` and Slice A's `org:*` channel module does not subscribe to `pulse_response_recorded`.
 
 | | |
 |---|---|
@@ -1182,15 +1192,15 @@ Each slice is end-to-end: domain + actions + frontend. Slices don't import from 
 Single agent again. Runs after all three slices are independently green.
 
 **Tasks**
-1. **Full seed file**: 1 org, 3 venues, 20 users (locales fi/pt/es, varied roles, mixed birthdays + started_at), 5 shifts with assignments, 10 announcements (mix of org-wide + venue-scoped, some `auto_translate: true`), 15 shoutouts (varied senders/recipients spread over the last 14 days for leaderboard variety), 1 active pulse + 1 closed pulse with seeded responses for the aggregate to look populated.
+1. **Full seed file**: 1 org, 3 venues, 20 users (locales fi/pt/es, varied roles, mixed birthdays + started_at), 5 shifts with assignments, 10 announcements (mix of org-wide + venue-scoped, some `auto_translate: true`), 15 shoutouts (varied senders/recipients spread over the last 14 days for leaderboard variety). (Pulse surveys + responses removed — Engagement cancelled.)
 2. **Translation smoke test**: pick one seeded `:fi` post with `auto_translate: true`, log in as a `:pt` user, verify a real OpenAI call lands and is cached on the second view.
 3. **Cross-slice scenarios**:
    - Adding a user to a venue (via iex) auto-joins them to that venue's chat channel — verify in two browsers.
    - Posting an announcement triggers `post_created` on `org:*` and updates every signed-in user's feed simultaneously.
-   - Submitting a pulse response updates the admin's aggregate live.
+   - ~~Submitting a pulse response updates the admin's aggregate live.~~ — cancelled.
 4. **Polish pass**: empty states (no messages, no shoutouts), loading skeletons, error boundaries on each page.
 5. **`mix precommit` green** end-to-end.
-6. **Demo script** (becomes §10): 5-minute walkthrough hitting feed → shoutout → translation → leaderboard → pulse → chat.
+6. **Demo script** (becomes §10): 5-minute walkthrough hitting feed → shoutout → translation → leaderboard → chat.
 
 ---
 
@@ -1224,7 +1234,7 @@ defmodule CrewPoc.Seeder do
   @moduledoc """
   Hardcoded seed data for local development.
   Realistic Nordic hospitality data across organizations, venues, users,
-  shifts, posts, shoutouts, and pulse surveys.
+  shifts, posts, and shoutouts. (Pulse surveys are out of scope for the POC.)
   """
 
   # Split verbose datasets into submodules when they get long.
@@ -1282,7 +1292,8 @@ defmodule CrewPoc.Seeder do
     ]
   end
 
-  # shifts, shift_assignments, posts, shoutouts, pulse_survey, messages ...
+  # shifts, shift_assignments, posts, shoutouts, messages ...
+  # (pulse_survey + pulse_response intentionally omitted — Engagement cancelled.)
 end
 ```
 
@@ -1325,9 +1336,9 @@ else
 end
 
 # ... destroy in reverse dep order: messages → conversation_memberships → conversations
-# → acknowledgements → post_translations → posts → shoutouts → pulse_responses
-# → pulse_surveys → shift_assignments → shifts → venue_memberships → venues
-# → users → organizations
+# → acknowledgements → post_translations → posts → shoutouts → shift_assignments
+# → shifts → venue_memberships → venues → users → organizations
+# (pulse_responses + pulse_surveys removed from the chain — Engagement cancelled.)
 
 IO.puts("Cleaned existing seed data")
 
@@ -1470,7 +1481,8 @@ defmodule CrewPoc.Generator do
   end
 
   # venue_membership, shift, shift_assignment, post, acknowledgement, shoutout,
-  # pulse_survey, pulse_response, conversation, conversation_membership, message ...
+  # conversation, conversation_membership, message ...
+  # (pulse_survey + pulse_response intentionally omitted — Engagement cancelled.)
 end
 ```
 
