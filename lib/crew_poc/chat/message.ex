@@ -29,6 +29,14 @@ defmodule CrewPoc.Chat.Message do
   actions do
     defaults [:read]
 
+    read :list_for_conversation do
+      argument :conversation_id, :uuid, allow_nil?: false
+
+      filter expr(conversation_id == ^arg(:conversation_id))
+
+      prepare build(sort: [inserted_at: :asc])
+    end
+
     create :create do
       accept [:conversation_id, :body]
 
@@ -72,7 +80,8 @@ defmodule CrewPoc.Chat.Message do
     attribute :author_id, :uuid, allow_nil?: false, public?: true
     attribute :body, :string, allow_nil?: false, public?: true
 
-    timestamps()
+    create_timestamp :inserted_at, public?: true
+    update_timestamp :updated_at, public?: true
   end
 
   relationships do
@@ -95,10 +104,10 @@ defmodule CrewPoc.Chat.Message do
               :auto,
               expr(%{
                 id: id,
-                conversation_id: conversation_id,
-                author_id: author_id,
+                conversationId: conversation_id,
+                authorId: author_id,
                 body: body,
-                inserted_at: inserted_at
+                insertedAt: inserted_at
               }) do
       public? true
     end

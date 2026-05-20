@@ -15,18 +15,20 @@ defmodule CrewPocWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", CrewPocWeb do
-    pipe_through :browser
-
-    get "/", PageController, :index
-    post "/rpc/run", AshTypescriptRpcController, :run
-    post "/rpc/validate", AshTypescriptRpcController, :validate
-  end
-
   scope "/api", CrewPocWeb do
     pipe_through :browser
 
     post "/switch_user", CurrentUserController, :switch_user
+  end
+
+  scope "/", CrewPocWeb do
+    pipe_through :browser
+
+    post "/rpc/run", AshTypescriptRpcController, :run
+    post "/rpc/validate", AshTypescriptRpcController, :validate
+
+    # Everything else is handled by the React SPA's BrowserRouter.
+    get "/*path", PageController, :index
   end
 
   # Enable Swoosh mailbox preview in development

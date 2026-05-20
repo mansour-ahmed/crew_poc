@@ -1,4 +1,4 @@
-import type { ChatConversationChannel, ChatConversationChannelEvents, ChatConversationChannelHandlers, ChatConversationChannelRefs, UserNotificationsChannel, UserNotificationsChannelEvents, UserNotificationsChannelHandlers, UserNotificationsChannelRefs } from "./ash_types";
+import type { ChatConversationChannel, ChatConversationChannelEvents, ChatConversationChannelHandlers, ChatConversationChannelRefs, OrgFeedChannel, OrgFeedChannelEvents, OrgFeedChannelHandlers, OrgFeedChannelRefs, UserNotificationsChannel, UserNotificationsChannelEvents, UserNotificationsChannelHandlers, UserNotificationsChannelRefs } from "./ash_types";
 export type * from "./ash_types";
 
 export function createChatConversationChannel(
@@ -37,6 +37,49 @@ export function unsubscribeChatConversationChannel(
 ): void {
   for (const event in refs) {
     const e = event as keyof ChatConversationChannelRefs;
+    const ref = refs[e];
+    if (ref !== undefined) {
+      channel.off(event, ref);
+    }
+  }
+}
+
+export function createOrgFeedChannel(
+  socket: { channel(topic: string, params?: object): unknown },
+  suffix: string
+): OrgFeedChannel {
+  return socket.channel(`org:${suffix}`) as OrgFeedChannel;
+}
+
+export function onOrgFeedChannelMessage<E extends keyof OrgFeedChannelEvents>(
+  channel: OrgFeedChannel,
+  event: E,
+  handler: (payload: OrgFeedChannelEvents[E]) => void
+): number {
+  return channel.on(event, (payload: unknown) => handler(payload as OrgFeedChannelEvents[E]));
+}
+
+export function onOrgFeedChannelMessages(
+  channel: OrgFeedChannel,
+  handlers: OrgFeedChannelHandlers
+): OrgFeedChannelRefs {
+  const refs: OrgFeedChannelRefs = {};
+  for (const event in handlers) {
+    const e = event as keyof OrgFeedChannelEvents;
+    const handler = handlers[e];
+    if (handler) {
+      refs[e] = channel.on(event, (payload) => (handler as (p: unknown) => void)(payload));
+    }
+  }
+  return refs;
+}
+
+export function unsubscribeOrgFeedChannel(
+  channel: OrgFeedChannel,
+  refs: OrgFeedChannelRefs
+): void {
+  for (const event in refs) {
+    const e = event as keyof OrgFeedChannelRefs;
     const ref = refs[e];
     if (ref !== undefined) {
       channel.off(event, ref);

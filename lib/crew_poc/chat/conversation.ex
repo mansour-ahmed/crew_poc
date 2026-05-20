@@ -48,6 +48,16 @@ defmodule CrewPoc.Chat.Conversation do
   actions do
     defaults [:read]
 
+    # Conversations the actor cares about right now: venue channels they belong
+    # to + shift channels for shifts that are currently in progress.
+    read :list_pinned do
+      filter expr(
+               kind == :venue_channel or
+                 (kind == :shift_channel and shift.starts_at <= now() and
+                    shift.ends_at > now())
+             )
+    end
+
     create :create_venue_conversation do
       accept [:venue_id]
 

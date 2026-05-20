@@ -94,11 +94,22 @@ defmodule CrewPoc.Chat.ConversationMembership do
     calculate :unread_summary,
               :auto,
               expr(%{
-                conversation_id: conversation_id,
-                user_id: user_id,
-                last_read_at: last_read_at
+                conversationId: conversation_id,
+                userId: user_id,
+                lastReadAt: last_read_at
               }) do
       public? true
+    end
+  end
+
+  aggregates do
+    count :unread_count, [:conversation, :messages] do
+      public? true
+
+      filter expr(
+               author_id != parent(user_id) and
+                 (is_nil(parent(last_read_at)) or inserted_at > parent(last_read_at))
+             )
     end
   end
 
