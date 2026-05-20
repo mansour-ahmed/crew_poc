@@ -156,7 +156,18 @@
           {Credo.Check.Refactor.NegatedIsNil, []},
           {Credo.Check.Refactor.PipeChainStart,
            [
-             excluded_functions: []
+             excluded_functions: [
+               "user",
+               "organization",
+               "venue",
+               "venue_membership",
+               "user_authorization",
+               "shift",
+               "shift_assignment",
+               "tag",
+               "generate",
+               "generate_many"
+             ]
            ]},
           {Credo.Check.Refactor.PassAsyncInTestCases, []},
           {Credo.Check.Refactor.ABCSize, []},

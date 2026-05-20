@@ -50,7 +50,6 @@ config :spark,
         :preparations,
         :changes,
         :validations,
-        :multitenancy,
         :attributes,
         :relationships,
         :calculations,
@@ -65,7 +64,7 @@ config :spark,
 
 config :crew_poc,
   ecto_repos: [CrewPoc.Repo],
-  ash_domains: [],
+  ash_domains: [CrewPoc.Accounts, CrewPoc.Venues],
   generators: [timestamp_type: :utc_datetime]
 
 # Configure the endpoint

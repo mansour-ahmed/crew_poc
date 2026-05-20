@@ -27,6 +27,7 @@ defmodule CrewPoc.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import CrewPoc.DataCase
+      import CrewPoc.Generator
     end
   end
 
@@ -60,5 +61,11 @@ defmodule CrewPoc.DataCase do
         to_string(value)
       end)
     end)
+  end
+
+  @doc "Assert two lists contain the same elements regardless of order."
+  @spec assert_lists_equal(list(), list()) :: true
+  def assert_lists_equal(left, right) do
+    assert Enum.sort(left) == Enum.sort(right)
   end
 end
