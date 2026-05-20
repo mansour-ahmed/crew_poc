@@ -13,6 +13,10 @@ defmodule CrewPoc.Feed do
     resource CrewPoc.Feed.Acknowledgement do
       rpc_action :create_acknowledgement, :create
     end
+
+    resource CrewPoc.Feed.PostTranslation do
+      rpc_action :ensure_post_translation, :ensure_for
+    end
   end
 
   resources do
@@ -23,7 +27,11 @@ defmodule CrewPoc.Feed do
       define :search_posts, action: :search, args: [:query]
     end
 
-    resource CrewPoc.Feed.PostTranslation
+    resource CrewPoc.Feed.PostTranslation do
+      define :ensure_post_translation,
+        action: :ensure_for,
+        args: [:post_id, :target_locale]
+    end
 
     resource CrewPoc.Feed.Acknowledgement do
       define :create_acknowledgement, action: :create, args: [:post_id]

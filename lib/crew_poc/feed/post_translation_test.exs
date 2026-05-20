@@ -1,9 +1,8 @@
-defmodule CrewPoc.Feed.TranslationsTest do
+defmodule CrewPoc.Feed.PostTranslationTest do
   use CrewPoc.DataCase, async: true
 
   alias CrewPoc.Feed
   alias CrewPoc.Feed.PostTranslation
-  alias CrewPoc.Feed.Translations
 
   require Ash.Query
 
@@ -29,7 +28,7 @@ defmodule CrewPoc.Feed.TranslationsTest do
     %{organization: organization, post: post}
   end
 
-  describe "ensure_translation/2 cache hit" do
+  describe "ensure_for/2 cache hit" do
     test "given a cached translation, the prompt action is not invoked", %{
       organization: organization,
       post: post
@@ -48,7 +47,7 @@ defmodule CrewPoc.Feed.TranslationsTest do
                 id: ^cached_id,
                 title: "Bienvenidos",
                 body: "Bienvenidos al equipo"
-              }} = Translations.ensure_translation(post.id, "es")
+              }} = PostTranslation.ensure_for(post.id, "es")
     end
 
     test "given two cache hits, no duplicate row is created", %{
@@ -63,8 +62,8 @@ defmodule CrewPoc.Feed.TranslationsTest do
         body: "Bem-vindos à equipe"
       })
 
-      {:ok, _} = Translations.ensure_translation(post.id, "pt")
-      {:ok, _} = Translations.ensure_translation(post.id, "pt")
+      {:ok, _} = PostTranslation.ensure_for(post.id, "pt")
+      {:ok, _} = PostTranslation.ensure_for(post.id, "pt")
 
       rows =
         PostTranslation
