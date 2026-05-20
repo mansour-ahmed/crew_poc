@@ -1,14 +1,33 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CurrentUserProvider } from "./contexts/current-user-context";
+import { AppLayout } from "./layouts/app-layout";
+import { FeedPage } from "./pages/feed-page";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   return (
-    <div className="min-h-screen bg-base-100 text-base-content flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">CrewPoc</h1>
-        <p className="opacity-70">SPA is mounted.</p>
-      </div>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <CurrentUserProvider>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route index element={<FeedPage />} />
+            </Route>
+          </Routes>
+        </CurrentUserProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

@@ -3,14 +3,438 @@
 
 
 
+export type AshDate = string;
+export type UUID = string;
+export type UtcDateTime = string;
+
+// Organization Schema
+export type OrganizationResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id";
+  id: UUID;
+};
 
 
 
+export type OrganizationAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id";
+  id: UUID;
+};
+
+
+// User Schema
+export type UserResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "email" | "name" | "organizationId" | "role" | "locale" | "jobTitle" | "birthday" | "startedAt";
+  id: UUID;
+  email: string;
+  name: string;
+  organizationId: UUID;
+  role: "admin" | "manager" | "staff";
+  locale: string;
+  jobTitle: string;
+  birthday: AshDate;
+  startedAt: AshDate;
+};
 
 
 
+export type UserAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "email" | "name" | "organizationId" | "role" | "locale" | "jobTitle" | "birthday" | "startedAt";
+  id: UUID;
+  email: string;
+  name: string;
+  organizationId: UUID;
+  role: "admin" | "manager" | "staff";
+  locale: string;
+  jobTitle: string;
+  birthday: AshDate;
+  startedAt: AshDate;
+};
 
 
+// Shift Schema
+export type ShiftResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "name" | "startsAt" | "endsAt" | "organizationId" | "venueId";
+  id: UUID;
+  name: string;
+  startsAt: UtcDateTime;
+  endsAt: UtcDateTime;
+  organizationId: UUID;
+  venueId: UUID;
+};
+
+
+
+export type ShiftAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "name" | "startsAt" | "endsAt" | "organizationId" | "venueId";
+  id: UUID;
+  name: string;
+  startsAt: UtcDateTime;
+  endsAt: UtcDateTime;
+  organizationId: UUID;
+  venueId: UUID;
+};
+
+
+// ShiftAssignment Schema
+export type ShiftAssignmentResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "shiftId" | "userId";
+  id: UUID;
+  organizationId: UUID;
+  shiftId: UUID;
+  userId: UUID;
+};
+
+
+
+export type ShiftAssignmentAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "shiftId" | "userId";
+  id: UUID;
+  organizationId: UUID;
+  shiftId: UUID;
+  userId: UUID;
+};
+
+
+// Venue Schema
+export type VenueResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "name" | "slug" | "city" | "timezone" | "organizationId";
+  id: UUID;
+  name: string;
+  slug: string;
+  city: string;
+  timezone: string;
+  organizationId: UUID;
+  organization: { __type: "Relationship"; __resource: OrganizationResourceSchema; };
+};
+
+
+
+export type VenueAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "name" | "slug" | "city" | "timezone" | "organizationId";
+  id: UUID;
+  name: string;
+  slug: string;
+  city: string;
+  timezone: string;
+  organizationId: UUID;
+};
+
+
+// VenueMembership Schema
+export type VenueMembershipResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "venueId" | "userId";
+  id: UUID;
+  organizationId: UUID;
+  venueId: UUID;
+  userId: UUID;
+};
+
+
+
+export type VenueMembershipAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "venueId" | "userId";
+  id: UUID;
+  organizationId: UUID;
+  venueId: UUID;
+  userId: UUID;
+};
+
+
+export type OrganizationFilterInput = {
+  and?: Array<OrganizationFilterInput>;
+  or?: Array<OrganizationFilterInput>;
+  not?: Array<OrganizationFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+
+
+};
+export type UserFilterInput = {
+  and?: Array<UserFilterInput>;
+  or?: Array<UserFilterInput>;
+  not?: Array<UserFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  email?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  name?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  organizationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  role?: {
+    eq?: "admin" | "manager" | "staff";
+    notEq?: "admin" | "manager" | "staff";
+    in?: Array<"admin" | "manager" | "staff">;
+  };
+
+  locale?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  jobTitle?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  birthday?: {
+    eq?: AshDate;
+    notEq?: AshDate;
+    greaterThan?: AshDate;
+    greaterThanOrEqual?: AshDate;
+    lessThan?: AshDate;
+    lessThanOrEqual?: AshDate;
+    in?: Array<AshDate>;
+  };
+
+  startedAt?: {
+    eq?: AshDate;
+    notEq?: AshDate;
+    greaterThan?: AshDate;
+    greaterThanOrEqual?: AshDate;
+    lessThan?: AshDate;
+    lessThanOrEqual?: AshDate;
+    in?: Array<AshDate>;
+  };
+
+
+
+};
+export type ShiftFilterInput = {
+  and?: Array<ShiftFilterInput>;
+  or?: Array<ShiftFilterInput>;
+  not?: Array<ShiftFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  name?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  startsAt?: {
+    eq?: UtcDateTime;
+    notEq?: UtcDateTime;
+    greaterThan?: UtcDateTime;
+    greaterThanOrEqual?: UtcDateTime;
+    lessThan?: UtcDateTime;
+    lessThanOrEqual?: UtcDateTime;
+    in?: Array<UtcDateTime>;
+  };
+
+  endsAt?: {
+    eq?: UtcDateTime;
+    notEq?: UtcDateTime;
+    greaterThan?: UtcDateTime;
+    greaterThanOrEqual?: UtcDateTime;
+    lessThan?: UtcDateTime;
+    lessThanOrEqual?: UtcDateTime;
+    in?: Array<UtcDateTime>;
+  };
+
+  organizationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  venueId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+
+
+};
+export type ShiftAssignmentFilterInput = {
+  and?: Array<ShiftAssignmentFilterInput>;
+  or?: Array<ShiftAssignmentFilterInput>;
+  not?: Array<ShiftAssignmentFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  organizationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  shiftId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  userId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+
+
+};
+export type VenueFilterInput = {
+  and?: Array<VenueFilterInput>;
+  or?: Array<VenueFilterInput>;
+  not?: Array<VenueFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  name?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  slug?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  city?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  timezone?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  organizationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+
+  organization?: OrganizationFilterInput;
+
+};
+export type VenueMembershipFilterInput = {
+  and?: Array<VenueMembershipFilterInput>;
+  or?: Array<VenueMembershipFilterInput>;
+  not?: Array<VenueMembershipFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  organizationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  venueId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  userId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+
+
+};
+
+
+export const organizationFilterFields = ["id"] as const;
+export type OrganizationFilterField = (typeof organizationFilterFields)[number];
+
+export const userFilterFields = ["id", "email", "name", "organizationId", "role", "locale", "jobTitle", "birthday", "startedAt"] as const;
+export type UserFilterField = (typeof userFilterFields)[number];
+
+export const shiftFilterFields = ["id", "name", "startsAt", "endsAt", "organizationId", "venueId"] as const;
+export type ShiftFilterField = (typeof shiftFilterFields)[number];
+
+export const shiftAssignmentFilterFields = ["id", "organizationId", "shiftId", "userId"] as const;
+export type ShiftAssignmentFilterField = (typeof shiftAssignmentFilterFields)[number];
+
+export const venueFilterFields = ["id", "name", "slug", "city", "timezone", "organizationId", "organization"] as const;
+export type VenueFilterField = (typeof venueFilterFields)[number];
+
+export const venueMembershipFilterFields = ["id", "organizationId", "venueId", "userId"] as const;
+export type VenueMembershipFilterField = (typeof venueMembershipFilterFields)[number];
+
+
+export const organizationSortFields = ["id"] as const;
+export type OrganizationSortField = (typeof organizationSortFields)[number];
+
+export const userSortFields = ["id", "email", "name", "organizationId", "role", "locale", "jobTitle", "birthday", "startedAt"] as const;
+export type UserSortField = (typeof userSortFields)[number];
+
+export const shiftSortFields = ["id", "name", "startsAt", "endsAt", "organizationId", "venueId"] as const;
+export type ShiftSortField = (typeof shiftSortFields)[number];
+
+export const shiftAssignmentSortFields = ["id", "organizationId", "shiftId", "userId"] as const;
+export type ShiftAssignmentSortField = (typeof shiftAssignmentSortFields)[number];
+
+export const venueSortFields = ["id", "name", "slug", "city", "timezone", "organizationId"] as const;
+export type VenueSortField = (typeof venueSortFields)[number];
+
+export const venueMembershipSortFields = ["id", "organizationId", "venueId", "userId"] as const;
+export type VenueMembershipSortField = (typeof venueMembershipSortFields)[number];
 
 
 // Utility Types

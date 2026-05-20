@@ -8,6 +8,7 @@ defmodule CrewPocWeb.Router do
     plug :put_root_layout, html: {CrewPocWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug CrewPocWeb.Plugs.CurrentUser
   end
 
   pipeline :api do
@@ -22,10 +23,11 @@ defmodule CrewPocWeb.Router do
     post "/rpc/validate", AshTypescriptRpcController, :validate
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", CrewPocWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", CrewPocWeb do
+    pipe_through :browser
+
+    post "/switch_user", CurrentUserController, :switch_user
+  end
 
   # Enable Swoosh mailbox preview in development
   if Application.compile_env(:crew_poc, :dev_routes) do

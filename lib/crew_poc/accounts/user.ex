@@ -28,6 +28,11 @@ defmodule CrewPoc.Accounts.User do
     read :celebrating_today do
       filter expr(birthday_today? == true or work_anniversary_today? == true)
     end
+
+    read :get_current_user do
+      get? true
+      filter expr(id == ^actor(:id))
+    end
   end
 
   policies do

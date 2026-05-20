@@ -28,6 +28,7 @@ defmodule CrewPocWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import CrewPocWeb.ConnCase
+      import CrewPoc.Generator
     end
   end
 

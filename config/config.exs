@@ -19,7 +19,10 @@ config :ash_typescript,
   generate_validation_functions: true,
   zod_import_path: "zod",
   zod_schema_suffix: "ZodSchema",
-  phoenix_import_path: "phoenix"
+  phoenix_import_path: "phoenix",
+  typed_controllers: [CrewPoc.CurrentUser],
+  router: CrewPocWeb.Router,
+  routes_output_file: "assets/js/routes.ts"
 
 config :ash,
   allow_forbidden_field_for_relationships_by_default?: true,

@@ -11,6 +11,7 @@ defmodule CrewPoc.Accounts do
     resource CrewPoc.Accounts.User do
       rpc_action :list_users, :read
       rpc_action :get_user, :read
+      rpc_action :get_current_user, :get_current_user
       rpc_action :celebrating_today, :celebrating_today
     end
   end
@@ -24,6 +25,7 @@ defmodule CrewPoc.Accounts do
     resource CrewPoc.Accounts.User do
       define :celebrating_today, action: :celebrating_today
       define :create_user, action: :create
+      define :get_current_user, action: :get_current_user
       define :get_user, action: :read, get_by: [:id]
       define :list_users, action: :read
     end

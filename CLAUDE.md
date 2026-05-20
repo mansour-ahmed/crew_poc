@@ -731,6 +731,9 @@ The frontend is a **React 19 SPA**, not a LiveView app. The Phoenix backend serv
 - CSRF is handled automatically: `getPhoenixCSRFToken()` reads the `meta[name='csrf-token']` tag from the root layout and `buildCSRFHeaders` injects `X-CSRF-Token`. Don't bypass this.
 - To expose a new Ash action to the frontend, add an `rpc_action` entry in the domain's `typescript_rpc do` block, then regenerate the client.
 - Codegen config (output paths, endpoints, field formatters — currently `camelCase` both directions) lives in `config/config.exs` under `:ash_typescript`.
+- **Never** hand-roll TypeScript interfaces or types that describe backend resources, action inputs, or action results. Always derive them from the generated `Infer<Action>Result<Fields>`, `<Action>Input`, and related types in `ash_rpc.ts` / `ash_types.ts`. Hand-rolled shapes silently drift from the backend.
+- To derive a result type from a field selection: declare the fields as `const FIELDS = [...] as const`, use `type Mutable<T extends readonly unknown[]> = [...T]` to satisfy the codegen's mutable-array constraint, then `type Result = Infer<Action>Result<Mutable<typeof FIELDS>>`. Spread `[...FIELDS]` when passing to the action call. Never cast the result with `as SomeHandRolledType`.
+- If a type you need isn't exposed by the codegen, expose the underlying action via `rpc_action` and regenerate — don't define a parallel type by hand.
 
 ### JS bundle rules
 
