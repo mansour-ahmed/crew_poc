@@ -11,6 +11,10 @@ defmodule CrewPoc.Shifts.ShiftAssignment do
   postgres do
     table "shift_assignments"
     repo CrewPoc.Repo
+
+    references do
+      reference :organization, on_delete: :delete
+    end
   end
 
   typescript do

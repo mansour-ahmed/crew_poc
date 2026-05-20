@@ -31,8 +31,8 @@
           "global": null,
           "strategy": null
         },
-        "name": "shoutouts_organization_id_fkey",
-        "on_delete": null,
+        "name": "messages_organization_id_fkey",
+        "on_delete": "delete",
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
@@ -62,16 +62,16 @@
           "global": null,
           "strategy": null
         },
-        "name": "shoutouts_sender_id_fkey",
-        "on_delete": null,
+        "name": "messages_conversation_id_fkey",
+        "on_delete": "delete",
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "users"
+        "table": "conversations"
       },
       "scale": null,
       "size": null,
-      "source": "sender_id",
+      "source": "conversation_id",
       "type": "uuid"
     },
     {
@@ -93,7 +93,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "shoutouts_recipient_id_fkey",
+        "name": "messages_author_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -102,7 +102,7 @@
       },
       "scale": null,
       "size": null,
-      "source": "recipient_id",
+      "source": "author_id",
       "type": "uuid"
     },
     {
@@ -143,42 +143,12 @@
     }
   ],
   "base_filter": null,
-  "check_constraints": [
-    {
-      "attribute": [
-        "recipient_id"
-      ],
-      "base_filter": null,
-      "check": "sender_id <> recipient_id",
-      "name": "no_self_shoutout"
-    }
-  ],
+  "check_constraints": [],
   "create_table_options": null,
-  "custom_indexes": [
-    {
-      "all_tenants?": false,
-      "concurrently": false,
-      "error_fields": [],
-      "fields": [
-        {
-          "type": "string",
-          "value": "body gin_trgm_ops"
-        }
-      ],
-      "include": null,
-      "message": null,
-      "name": "shoutouts_body_gin_index",
-      "nulls_distinct": true,
-      "prefix": null,
-      "table": null,
-      "unique": false,
-      "using": "GIN",
-      "where": null
-    }
-  ],
+  "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "793803C1A6A6ACCCB85581DF7646300C127C63CE9252DBA852FA139237160BFB",
+  "hash": "E75620C1EE4754B8AC90182BF7B12F5C64E904F3E38C5FAF5A55B04F63A4D144",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -187,5 +157,5 @@
   },
   "repo": "Elixir.CrewPoc.Repo",
   "schema": null,
-  "table": "shoutouts"
+  "table": "messages"
 }

@@ -16,7 +16,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             column: :id,
             name: "shoutouts_organization_id_fkey",
             type: :uuid,
-            prefix: "public"
+            prefix: "public",
+            on_delete: :delete_all
           ), null: false
 
       add :sender_id,
@@ -59,7 +60,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             column: :id,
             name: "posts_organization_id_fkey",
             type: :uuid,
-            prefix: "public"
+            prefix: "public",
+            on_delete: :delete_all
           ), null: false
 
       add :venue_id,
@@ -105,7 +107,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             column: :id,
             name: "post_translations_organization_id_fkey",
             type: :uuid,
-            prefix: "public"
+            prefix: "public",
+            on_delete: :delete_all
           ), null: false
 
       add :post_id,
@@ -142,7 +145,8 @@ defmodule CrewPoc.Repo.Migrations.AddFeedAndRecognitionDomains do
             column: :id,
             name: "acknowledgements_organization_id_fkey",
             type: :uuid,
-            prefix: "public"
+            prefix: "public",
+            on_delete: :delete_all
           ), null: false
 
       add :post_id,

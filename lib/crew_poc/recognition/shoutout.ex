@@ -15,6 +15,10 @@ defmodule CrewPoc.Recognition.Shoutout do
     table "shoutouts"
     repo CrewPoc.Repo
 
+    references do
+      reference :organization, on_delete: :delete
+    end
+
     custom_indexes do
       index "body gin_trgm_ops", name: "shoutouts_body_gin_index", using: "GIN"
     end

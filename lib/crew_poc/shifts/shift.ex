@@ -12,6 +12,10 @@ defmodule CrewPoc.Shifts.Shift do
     table "shifts"
     repo CrewPoc.Repo
 
+    references do
+      reference :organization, on_delete: :delete
+    end
+
     check_constraints do
       check_constraint :ends_at, "ends_after_starts",
         check: "ends_at > starts_at",

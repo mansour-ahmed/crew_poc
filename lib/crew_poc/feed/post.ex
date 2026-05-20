@@ -18,6 +18,7 @@ defmodule CrewPoc.Feed.Post do
     repo CrewPoc.Repo
 
     references do
+      reference :organization, on_delete: :delete
       reference :venue, on_delete: :delete
     end
 

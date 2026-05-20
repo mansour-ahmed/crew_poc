@@ -31,8 +31,8 @@
           "global": null,
           "strategy": null
         },
-        "name": "posts_organization_id_fkey",
-        "on_delete": null,
+        "name": "acknowledgements_organization_id_fkey",
+        "on_delete": "delete",
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
@@ -44,7 +44,7 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": true,
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "precision": null,
@@ -62,16 +62,16 @@
           "global": null,
           "strategy": null
         },
-        "name": "posts_venue_id_fkey",
+        "name": "acknowledgements_post_id_fkey",
         "on_delete": "delete",
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "venues"
+        "table": "posts"
       },
       "scale": null,
       "size": null,
-      "source": "venue_id",
+      "source": "post_id",
       "type": "uuid"
     },
     {
@@ -93,7 +93,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "posts_author_id_fkey",
+        "name": "acknowledgements_user_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -102,56 +102,8 @@
       },
       "scale": null,
       "size": null,
-      "source": "author_id",
+      "source": "user_id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "title",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "body",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"en\"",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "original_locale",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "false",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "requires_acknowledgement",
-      "type": "boolean"
     },
     {
       "allow_nil?": false,
@@ -181,52 +133,30 @@
   "base_filter": null,
   "check_constraints": [],
   "create_table_options": null,
-  "custom_indexes": [
+  "custom_indexes": [],
+  "custom_statements": [],
+  "has_create_action": true,
+  "hash": "3994894F3ECD6A3F45139DF73391B8F9504482EF0D24483E67550DD648B7D814",
+  "identities": [
     {
       "all_tenants?": false,
-      "concurrently": false,
-      "error_fields": [],
-      "fields": [
+      "base_filter": null,
+      "index_name": "acknowledgements_unique_post_user_index",
+      "keys": [
         {
-          "type": "string",
-          "value": "title gin_trgm_ops"
+          "type": "atom",
+          "value": "post_id"
+        },
+        {
+          "type": "atom",
+          "value": "user_id"
         }
       ],
-      "include": null,
-      "message": null,
-      "name": "posts_title_gin_index",
-      "nulls_distinct": true,
-      "prefix": null,
-      "table": null,
-      "unique": false,
-      "using": "GIN",
-      "where": null
-    },
-    {
-      "all_tenants?": false,
-      "concurrently": false,
-      "error_fields": [],
-      "fields": [
-        {
-          "type": "string",
-          "value": "body gin_trgm_ops"
-        }
-      ],
-      "include": null,
-      "message": null,
-      "name": "posts_body_gin_index",
-      "nulls_distinct": true,
-      "prefix": null,
-      "table": null,
-      "unique": false,
-      "using": "GIN",
+      "name": "unique_post_user",
+      "nils_distinct?": true,
       "where": null
     }
   ],
-  "custom_statements": [],
-  "has_create_action": true,
-  "hash": "A088BE1C7A2558D63CB045A929A0428474A92A5821B9B855E3771E650E77367A",
-  "identities": [],
   "multitenancy": {
     "attribute": null,
     "global": null,
@@ -234,5 +164,5 @@
   },
   "repo": "Elixir.CrewPoc.Repo",
   "schema": null,
-  "table": "posts"
+  "table": "acknowledgements"
 }

@@ -14,6 +14,7 @@ defmodule CrewPoc.Chat.Message do
     repo CrewPoc.Repo
 
     references do
+      reference :organization, on_delete: :delete
       reference :conversation, on_delete: :delete
     end
   end

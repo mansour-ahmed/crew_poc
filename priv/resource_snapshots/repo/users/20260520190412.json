@@ -18,6 +18,30 @@
       "generated?": false,
       "precision": null,
       "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "email",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "name",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
       "references": {
         "deferrable": false,
         "destination_attribute": "id",
@@ -31,8 +55,8 @@
           "global": null,
           "strategy": null
         },
-        "name": "acknowledgements_organization_id_fkey",
-        "on_delete": null,
+        "name": "users_organization_id_fkey",
+        "on_delete": "delete",
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
@@ -45,34 +69,27 @@
     },
     {
       "allow_nil?": false,
-      "default": "nil",
+      "default": "\"staff\"",
       "generated?": false,
       "precision": null,
       "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "acknowledgements_post_id_fkey",
-        "on_delete": "delete",
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "posts"
-      },
+      "references": null,
       "scale": null,
       "size": null,
-      "source": "post_id",
-      "type": "uuid"
+      "source": "role",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "\"en\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "locale",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -80,30 +97,35 @@
       "generated?": false,
       "precision": null,
       "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "acknowledgements_user_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "users"
-      },
+      "references": null,
       "scale": null,
       "size": null,
-      "source": "user_id",
-      "type": "uuid"
+      "source": "job_title",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "birthday",
+      "type": "date"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "started_at",
+      "type": "date"
     },
     {
       "allow_nil?": false,
@@ -136,23 +158,19 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "95F9AEC788674C623290EF1C03AA2972155F917B28EECF4CCAE401A10829B38B",
+  "hash": "53BFB00AA204D8E5A9B8BBB212C74477AC023F730764AB24EB6DCD0C96E051D7",
   "identities": [
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "acknowledgements_unique_post_user_index",
+      "index_name": "users_unique_email_index",
       "keys": [
         {
           "type": "atom",
-          "value": "post_id"
-        },
-        {
-          "type": "atom",
-          "value": "user_id"
+          "value": "email"
         }
       ],
-      "name": "unique_post_user",
+      "name": "unique_email",
       "nils_distinct?": true,
       "where": null
     }
@@ -164,5 +182,5 @@
   },
   "repo": "Elixir.CrewPoc.Repo",
   "schema": null,
-  "table": "acknowledgements"
+  "table": "users"
 }

@@ -12,6 +12,7 @@ defmodule CrewPoc.Feed.PostTranslation do
     repo CrewPoc.Repo
 
     references do
+      reference :organization, on_delete: :delete
       reference :post, on_delete: :delete
     end
   end

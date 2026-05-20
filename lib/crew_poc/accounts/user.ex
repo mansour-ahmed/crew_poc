@@ -8,6 +8,10 @@ defmodule CrewPoc.Accounts.User do
   postgres do
     table "users"
     repo CrewPoc.Repo
+
+    references do
+      reference :organization, on_delete: :delete
+    end
   end
 
   typescript do
