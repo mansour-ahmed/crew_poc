@@ -48,6 +48,23 @@ rm -rf .postgres-data     # wipe all data and start fresh
 
 After wiping data, run `mix setup` again to recreate the databases.
 
+### Seed data
+
+`mix setup` (and `mix ecto.setup`) runs `priv/repo/seeds.exs`, which creates a small fixed dataset for local development:
+
+- **1 organization** — Meridian Hotels & Resorts (slug `meridian`)
+- **5 users** — one admin (James Okafor), one manager (Sofia Reyes), three staff. Mixed locales (`en`, `es`, `fi`, `pt`) and a spread of birthdays / start dates so the `celebrating_today` action has something to surface.
+- **3 venues** — London Mayfair, Dubai Marina, New York Midtown (each with a real IANA time zone)
+- **Venue memberships** — every user belongs to London; admins/managers also cover Dubai and New York
+
+Re-run the seeds at any time with:
+
+```sh
+mix run priv/repo/seeds.exs
+```
+
+The script is idempotent — it deletes existing records matching the seed slugs/emails before re-inserting, so you can run it repeatedly without duplicate-key errors. To add or change fixtures, edit the identifier lists at the top of `priv/repo/seeds.exs`.
+
 ## Testing
 
 - `mix test` — run the test suite
