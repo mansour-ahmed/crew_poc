@@ -33,6 +33,7 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
     <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
       {messages.map((m) => {
         const isMine = m.authorId === currentUserId;
+        const authorName = m.authorName ?? "Unknown";
         return (
           <div
             key={m.id}
@@ -40,8 +41,13 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
               isMine ? "flex-row-reverse" : ""
             }`}
           >
-            <UserAvatar name={m.authorId} id={m.authorId} size="sm" />
-            <div className={`max-w-md ${isMine ? "items-end" : ""}`}>
+            <UserAvatar name={authorName} id={m.authorId} size="sm" />
+            <div className={`max-w-md flex flex-col ${isMine ? "items-end" : "items-start"}`}>
+              {!isMine && (
+                <div className="mb-1 px-1 text-xs font-medium text-base-content/60">
+                  {authorName}
+                </div>
+              )}
               <div
                 className={`px-4 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words ${
                   isMine

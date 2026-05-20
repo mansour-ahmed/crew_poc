@@ -4,9 +4,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CurrentUserProvider } from "./contexts/current-user-context";
 import { SocketProvider } from "./contexts/socket-context";
+import { ToastProvider } from "./contexts/toast-context";
 import { AppLayout } from "./layouts/app-layout";
 import { ChatLayout } from "./layouts/chat-layout";
 import { FeedPage } from "./pages/feed-page";
+import { PostComposePage } from "./pages/post-compose-page";
+import { ShoutoutComposePage } from "./pages/shoutout-compose-page";
 import { ConversationView, ChatIndex } from "./pages/conversation-view";
 
 const queryClient = new QueryClient({
@@ -24,15 +27,19 @@ function App() {
       <BrowserRouter>
         <CurrentUserProvider>
           <SocketProvider>
-            <Routes>
-              <Route element={<AppLayout />}>
-                <Route index element={<FeedPage />} />
-              </Route>
-              <Route path="/chat" element={<ChatLayout />}>
-                <Route index element={<ChatIndex />} />
-                <Route path=":conversationId" element={<ConversationView />} />
-              </Route>
-            </Routes>
+            <ToastProvider>
+              <Routes>
+                <Route element={<AppLayout />}>
+                  <Route index element={<FeedPage />} />
+                  <Route path="/posts/new" element={<PostComposePage />} />
+                  <Route path="/shoutouts/new" element={<ShoutoutComposePage />} />
+                </Route>
+                <Route path="/chat" element={<ChatLayout />}>
+                  <Route index element={<ChatIndex />} />
+                  <Route path=":conversationId" element={<ConversationView />} />
+                </Route>
+              </Routes>
+            </ToastProvider>
           </SocketProvider>
         </CurrentUserProvider>
       </BrowserRouter>

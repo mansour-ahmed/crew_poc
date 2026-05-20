@@ -109,7 +109,7 @@ export type ConversationMembershipAttributesOnlySchema = {
 // Message Schema
 export type MessageResourceSchema = {
   __type: "Resource";
-  __primitiveFields: "id" | "organizationId" | "conversationId" | "authorId" | "body" | "insertedAt" | "updatedAt";
+  __primitiveFields: "id" | "organizationId" | "conversationId" | "authorId" | "body" | "insertedAt" | "updatedAt" | "authorName";
   id: UUID;
   organizationId: UUID;
   conversationId: UUID;
@@ -117,7 +117,8 @@ export type MessageResourceSchema = {
   body: string;
   insertedAt: UtcDateTimeUsec;
   updatedAt: UtcDateTimeUsec;
-  messageSummary: { __type: "ComplexCalculation"; __returnType: {authorId: UUID, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, __type: "TypedMap", __primitiveFields: "authorId" | "body" | "conversationId" | "id" | "insertedAt"} | null; };
+  authorName: string | null;
+  messageSummary: { __type: "ComplexCalculation"; __returnType: {authorId: UUID, authorName: string, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, __type: "TypedMap", __primitiveFields: "authorId" | "authorName" | "body" | "conversationId" | "id" | "insertedAt"} | null; };
 };
 
 
@@ -161,7 +162,7 @@ export type AcknowledgementAttributesOnlySchema = {
 // Post Schema
 export type PostResourceSchema = {
   __type: "Resource";
-  __primitiveFields: "id" | "organizationId" | "venueId" | "authorId" | "title" | "body" | "originalLocale" | "requiresAcknowledgement" | "ackCount" | "acknowledgedByActor";
+  __primitiveFields: "id" | "organizationId" | "venueId" | "authorId" | "title" | "body" | "originalLocale" | "requiresAcknowledgement" | "insertedAt" | "updatedAt" | "ackCount" | "acknowledgedByActor";
   id: UUID;
   organizationId: UUID;
   venueId: UUID | null;
@@ -170,6 +171,8 @@ export type PostResourceSchema = {
   body: string;
   originalLocale: string;
   requiresAcknowledgement: boolean;
+  insertedAt: UtcDateTimeUsec;
+  updatedAt: UtcDateTimeUsec;
   ackCount: number;
   acknowledgedByActor: boolean | null;
   feedSummary: { __type: "ComplexCalculation"; __returnType: {authorId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, organizationId: UUID, title: string, venueId: UUID | null, __type: "TypedMap", __primitiveFields: "authorId" | "id" | "insertedAt" | "organizationId" | "title" | "venueId"} | null; };
@@ -179,7 +182,7 @@ export type PostResourceSchema = {
 
 export type PostAttributesOnlySchema = {
   __type: "Resource";
-  __primitiveFields: "id" | "organizationId" | "venueId" | "authorId" | "title" | "body" | "originalLocale" | "requiresAcknowledgement";
+  __primitiveFields: "id" | "organizationId" | "venueId" | "authorId" | "title" | "body" | "originalLocale" | "requiresAcknowledgement" | "insertedAt" | "updatedAt";
   id: UUID;
   organizationId: UUID;
   venueId: UUID | null;
@@ -188,18 +191,48 @@ export type PostAttributesOnlySchema = {
   body: string;
   originalLocale: string;
   requiresAcknowledgement: boolean;
+  insertedAt: UtcDateTimeUsec;
+  updatedAt: UtcDateTimeUsec;
+};
+
+
+// PostTranslation Schema
+export type PostTranslationResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "postId" | "targetLocale" | "title" | "body";
+  id: UUID;
+  organizationId: UUID;
+  postId: UUID;
+  targetLocale: string;
+  title: string;
+  body: string;
+};
+
+
+
+export type PostTranslationAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "postId" | "targetLocale" | "title" | "body";
+  id: UUID;
+  organizationId: UUID;
+  postId: UUID;
+  targetLocale: string;
+  title: string;
+  body: string;
 };
 
 
 // Shoutout Schema
 export type ShoutoutResourceSchema = {
   __type: "Resource";
-  __primitiveFields: "id" | "organizationId" | "senderId" | "recipientId" | "body";
+  __primitiveFields: "id" | "organizationId" | "senderId" | "recipientId" | "body" | "insertedAt" | "updatedAt";
   id: UUID;
   organizationId: UUID;
   senderId: UUID;
   recipientId: UUID;
   body: string;
+  insertedAt: UtcDateTimeUsec;
+  updatedAt: UtcDateTimeUsec;
   shoutoutSummary: { __type: "ComplexCalculation"; __returnType: {body: string, id: UUID, insertedAt: UtcDateTimeUsec, recipientId: UUID, senderId: UUID, __type: "TypedMap", __primitiveFields: "body" | "id" | "insertedAt" | "recipientId" | "senderId"} | null; };
 };
 
@@ -207,12 +240,14 @@ export type ShoutoutResourceSchema = {
 
 export type ShoutoutAttributesOnlySchema = {
   __type: "Resource";
-  __primitiveFields: "id" | "organizationId" | "senderId" | "recipientId" | "body";
+  __primitiveFields: "id" | "organizationId" | "senderId" | "recipientId" | "body" | "insertedAt" | "updatedAt";
   id: UUID;
   organizationId: UUID;
   senderId: UUID;
   recipientId: UUID;
   body: string;
+  insertedAt: UtcDateTimeUsec;
+  updatedAt: UtcDateTimeUsec;
 };
 
 
@@ -552,10 +587,17 @@ export type MessageFilterInput = {
     in?: Array<UtcDateTimeUsec>;
   };
 
+  authorName?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+    isNil?: boolean;
+  };
+
   messageSummary?: {
-    eq?: {authorId: UUID, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, __type: "TypedMap", __primitiveFields: "authorId" | "body" | "conversationId" | "id" | "insertedAt"};
-    notEq?: {authorId: UUID, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, __type: "TypedMap", __primitiveFields: "authorId" | "body" | "conversationId" | "id" | "insertedAt"};
-    in?: Array<{authorId: UUID, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, __type: "TypedMap", __primitiveFields: "authorId" | "body" | "conversationId" | "id" | "insertedAt"}>;
+    eq?: {authorId: UUID, authorName: string, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, __type: "TypedMap", __primitiveFields: "authorId" | "authorName" | "body" | "conversationId" | "id" | "insertedAt"};
+    notEq?: {authorId: UUID, authorName: string, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, __type: "TypedMap", __primitiveFields: "authorId" | "authorName" | "body" | "conversationId" | "id" | "insertedAt"};
+    in?: Array<{authorId: UUID, authorName: string, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, __type: "TypedMap", __primitiveFields: "authorId" | "authorName" | "body" | "conversationId" | "id" | "insertedAt"}>;
     isNil?: boolean;
   };
 
@@ -654,6 +696,26 @@ export type PostFilterInput = {
     notEq?: boolean;
   };
 
+  insertedAt?: {
+    eq?: UtcDateTimeUsec;
+    notEq?: UtcDateTimeUsec;
+    greaterThan?: UtcDateTimeUsec;
+    greaterThanOrEqual?: UtcDateTimeUsec;
+    lessThan?: UtcDateTimeUsec;
+    lessThanOrEqual?: UtcDateTimeUsec;
+    in?: Array<UtcDateTimeUsec>;
+  };
+
+  updatedAt?: {
+    eq?: UtcDateTimeUsec;
+    notEq?: UtcDateTimeUsec;
+    greaterThan?: UtcDateTimeUsec;
+    greaterThanOrEqual?: UtcDateTimeUsec;
+    lessThan?: UtcDateTimeUsec;
+    lessThanOrEqual?: UtcDateTimeUsec;
+    in?: Array<UtcDateTimeUsec>;
+  };
+
   acknowledgedByActor?: {
     eq?: boolean;
     notEq?: boolean;
@@ -677,6 +739,50 @@ export type PostFilterInput = {
     in?: Array<number>;
     isNil?: boolean;
   };
+
+
+};
+export type PostTranslationFilterInput = {
+  and?: Array<PostTranslationFilterInput>;
+  or?: Array<PostTranslationFilterInput>;
+  not?: Array<PostTranslationFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  organizationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  postId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  targetLocale?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  title?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  body?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
 
 
 };
@@ -713,6 +819,26 @@ export type ShoutoutFilterInput = {
     eq?: string;
     notEq?: string;
     in?: Array<string>;
+  };
+
+  insertedAt?: {
+    eq?: UtcDateTimeUsec;
+    notEq?: UtcDateTimeUsec;
+    greaterThan?: UtcDateTimeUsec;
+    greaterThanOrEqual?: UtcDateTimeUsec;
+    lessThan?: UtcDateTimeUsec;
+    lessThanOrEqual?: UtcDateTimeUsec;
+    in?: Array<UtcDateTimeUsec>;
+  };
+
+  updatedAt?: {
+    eq?: UtcDateTimeUsec;
+    notEq?: UtcDateTimeUsec;
+    greaterThan?: UtcDateTimeUsec;
+    greaterThanOrEqual?: UtcDateTimeUsec;
+    lessThan?: UtcDateTimeUsec;
+    lessThanOrEqual?: UtcDateTimeUsec;
+    in?: Array<UtcDateTimeUsec>;
   };
 
   shoutoutSummary?: {
@@ -900,16 +1026,19 @@ export type ConversationFilterField = (typeof conversationFilterFields)[number];
 export const conversationMembershipFilterFields = ["id", "conversationId", "userId", "lastReadAt", "unreadSummary", "unreadCount"] as const;
 export type ConversationMembershipFilterField = (typeof conversationMembershipFilterFields)[number];
 
-export const messageFilterFields = ["id", "organizationId", "conversationId", "authorId", "body", "insertedAt", "updatedAt", "messageSummary"] as const;
+export const messageFilterFields = ["id", "organizationId", "conversationId", "authorId", "body", "insertedAt", "updatedAt", "authorName", "messageSummary"] as const;
 export type MessageFilterField = (typeof messageFilterFields)[number];
 
 export const acknowledgementFilterFields = ["id", "organizationId", "postId", "userId", "ackSummary"] as const;
 export type AcknowledgementFilterField = (typeof acknowledgementFilterFields)[number];
 
-export const postFilterFields = ["id", "organizationId", "venueId", "authorId", "title", "body", "originalLocale", "requiresAcknowledgement", "acknowledgedByActor", "feedSummary", "ackCount"] as const;
+export const postFilterFields = ["id", "organizationId", "venueId", "authorId", "title", "body", "originalLocale", "requiresAcknowledgement", "insertedAt", "updatedAt", "acknowledgedByActor", "feedSummary", "ackCount"] as const;
 export type PostFilterField = (typeof postFilterFields)[number];
 
-export const shoutoutFilterFields = ["id", "organizationId", "senderId", "recipientId", "body", "shoutoutSummary"] as const;
+export const postTranslationFilterFields = ["id", "organizationId", "postId", "targetLocale", "title", "body"] as const;
+export type PostTranslationFilterField = (typeof postTranslationFilterFields)[number];
+
+export const shoutoutFilterFields = ["id", "organizationId", "senderId", "recipientId", "body", "insertedAt", "updatedAt", "shoutoutSummary"] as const;
 export type ShoutoutFilterField = (typeof shoutoutFilterFields)[number];
 
 export const shiftFilterFields = ["id", "name", "startsAt", "endsAt", "organizationId", "venueId"] as const;
@@ -937,16 +1066,19 @@ export type ConversationSortField = (typeof conversationSortFields)[number];
 export const conversationMembershipSortFields = ["id", "conversationId", "userId", "lastReadAt", "unreadSummary", "unreadCount"] as const;
 export type ConversationMembershipSortField = (typeof conversationMembershipSortFields)[number];
 
-export const messageSortFields = ["id", "organizationId", "conversationId", "authorId", "body", "insertedAt", "updatedAt", "messageSummary"] as const;
+export const messageSortFields = ["id", "organizationId", "conversationId", "authorId", "body", "insertedAt", "updatedAt", "authorName", "messageSummary"] as const;
 export type MessageSortField = (typeof messageSortFields)[number];
 
 export const acknowledgementSortFields = ["id", "organizationId", "postId", "userId", "ackSummary"] as const;
 export type AcknowledgementSortField = (typeof acknowledgementSortFields)[number];
 
-export const postSortFields = ["id", "organizationId", "venueId", "authorId", "title", "body", "originalLocale", "requiresAcknowledgement", "acknowledgedByActor", "feedSummary", "ackCount"] as const;
+export const postSortFields = ["id", "organizationId", "venueId", "authorId", "title", "body", "originalLocale", "requiresAcknowledgement", "insertedAt", "updatedAt", "acknowledgedByActor", "feedSummary", "ackCount"] as const;
 export type PostSortField = (typeof postSortFields)[number];
 
-export const shoutoutSortFields = ["id", "organizationId", "senderId", "recipientId", "body", "shoutoutSummary"] as const;
+export const postTranslationSortFields = ["id", "organizationId", "postId", "targetLocale", "title", "body"] as const;
+export type PostTranslationSortField = (typeof postTranslationSortFields)[number];
+
+export const shoutoutSortFields = ["id", "organizationId", "senderId", "recipientId", "body", "insertedAt", "updatedAt", "shoutoutSummary"] as const;
 export type ShoutoutSortField = (typeof shoutoutSortFields)[number];
 
 export const shiftSortFields = ["id", "name", "startsAt", "endsAt", "organizationId", "venueId"] as const;
@@ -1389,7 +1521,7 @@ export type ValidationResult =
 
 
 export type AcknowledgementAddedPayload = {id: UUID, organizationId: UUID, postId: UUID, userId: UUID};
-export type MessageCreatedPayload = {authorId: UUID, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec};
+export type MessageCreatedPayload = {authorId: UUID, authorName: string, body: string, conversationId: UUID, id: UUID, insertedAt: UtcDateTimeUsec};
 export type PostCreatedPayload = {authorId: UUID, id: UUID, insertedAt: UtcDateTimeUsec, organizationId: UUID, title: string, venueId: UUID | null};
 export type ShoutoutCreatedPayload = {body: string, id: UUID, insertedAt: UtcDateTimeUsec, recipientId: UUID, senderId: UUID};
 export type UnreadChangedPayload = {conversationId: UUID, lastReadAt: UtcDateTime | null, userId: UUID};

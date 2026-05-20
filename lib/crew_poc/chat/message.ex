@@ -101,12 +101,17 @@ defmodule CrewPoc.Chat.Message do
   end
 
   calculations do
+    calculate :author_name, :string, expr(author.name) do
+      public? true
+    end
+
     calculate :message_summary,
               :auto,
               expr(%{
                 id: id,
                 conversationId: conversation_id,
                 authorId: author_id,
+                authorName: author.name,
                 body: body,
                 insertedAt: inserted_at
               }) do

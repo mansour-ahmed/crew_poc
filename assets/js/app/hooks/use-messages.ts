@@ -18,6 +18,7 @@ const MESSAGE_FIELDS = [
   "id",
   "conversationId",
   "authorId",
+  "authorName",
   "body",
   "insertedAt",
 ] as const;

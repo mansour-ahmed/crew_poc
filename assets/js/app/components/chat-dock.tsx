@@ -73,39 +73,40 @@ export function ChatDock() {
   const totalUnread = memberships.reduce((sum, m) => sum + (m.unreadCount ?? 0), 0);
 
   return (
-    <aside className="block mx-6 mt-6 lg:mx-0 lg:mt-0 lg:fixed lg:top-20 lg:right-6 lg:w-80 lg:max-h-[calc(100vh-6rem)]">
-      <div className="bg-base-100/90 backdrop-blur-sm border border-base-content/10 rounded-2xl shadow-sm flex flex-col lg:max-h-inherit">
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-base-content/10">
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold tracking-tight">Reach out to your team</h2>
-            <UnreadBadge count={totalUnread} />
-          </div>
-          <Link to="/chat" className="text-xs text-primary hover:underline">
-            Open chat →
-          </Link>
+    <section className="bg-base-100/90 backdrop-blur-sm border border-base-content/10 rounded-2xl shadow-sm flex flex-col">
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-base-content/10">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-semibold tracking-tight">Reach out to your team</h2>
+          <UnreadBadge count={totalUnread} />
         </div>
-
-        <div className="overflow-y-auto px-2 py-4 space-y-7">
-          {isLoading ? (
-            <p className="px-3 text-sm text-base-content/60">Loading…</p>
-          ) : conversations.length === 0 ? (
-            <p className="px-3 text-sm text-base-content/60">Nothing pinned right now.</p>
-          ) : (
-            <>
-              <Section
-                title="Venues"
-                conversations={venueConversations}
-                unreadByConversation={unreadByConversation}
-              />
-              <Section
-                title="Active shifts"
-                conversations={shiftConversations}
-                unreadByConversation={unreadByConversation}
-              />
-            </>
-          )}
-        </div>
+        <Link
+          to="/chat"
+          className="text-xs font-medium text-base-content/80 hover:text-base-content underline underline-offset-2 decoration-base-content/30 hover:decoration-base-content"
+        >
+          Open chat →
+        </Link>
       </div>
-    </aside>
+
+      <div className="px-2 py-4 space-y-7">
+        {isLoading ? (
+          <p className="px-3 text-sm text-base-content/60">Loading…</p>
+        ) : conversations.length === 0 ? (
+          <p className="px-3 text-sm text-base-content/60">Nothing pinned right now.</p>
+        ) : (
+          <>
+            <Section
+              title="Venues"
+              conversations={venueConversations}
+              unreadByConversation={unreadByConversation}
+            />
+            <Section
+              title="Active shifts"
+              conversations={shiftConversations}
+              unreadByConversation={unreadByConversation}
+            />
+          </>
+        )}
+      </div>
+    </section>
   );
 }

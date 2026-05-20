@@ -23,9 +23,9 @@ function initials(name: string): string {
 }
 
 const sizeClasses: Record<NonNullable<Props["size"]>, string> = {
-  sm: "w-7 h-7 text-base",
-  md: "w-9 h-9 text-xl",
-  lg: "w-12 h-12 text-2xl",
+  sm: "w-7 h-7 text-[11px]",
+  md: "w-9 h-9 text-sm",
+  lg: "w-12 h-12 text-lg",
 };
 
 export function UserAvatar({ name, id, size = "md" }: Props) {

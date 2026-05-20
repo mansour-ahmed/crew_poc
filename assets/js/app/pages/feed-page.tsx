@@ -1,17 +1,19 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import { useCurrentUser } from "../contexts/current-user-context";
 import { UserAvatar } from "../components/user-avatar";
-
-const LOCALE_LABELS: Record<string, string> = {
-  fi: "Finnish",
-  pt: "Portuguese",
-  es: "Spanish",
-};
+import { useFeed } from "../hooks/use-feed";
+import { useOrgUsers } from "../hooks/use-org-users";
+import { PostCard } from "../components/post-card";
+import { ShoutoutCard } from "../components/shoutout-card";
+import { CelebrationCard } from "../components/celebration-card";
+import { LOCALE_LABEL } from "../lib/locales";
 
 export function FeedPage() {
-  const { currentUser, isLoading } = useCurrentUser();
+  const { currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
+  const { data: feed, isLoading: isFeedLoading } = useFeed();
+  const { byId: usersById } = useOrgUsers();
 
-  if (isLoading) {
+  if (isCurrentUserLoading) {
     return (
       <div className="flex justify-center py-24">
         <span className="loading loading-spinner loading-md opacity-60" aria-label="Loading…" />
@@ -33,40 +35,74 @@ export function FeedPage() {
   }
 
   const localeName = currentUser.locale
-    ? (LOCALE_LABELS[currentUser.locale] ?? currentUser.locale)
+    ? (LOCALE_LABEL[currentUser.locale] ?? currentUser.locale)
     : "—";
 
-  const firstName = currentUser.name.split(" ")[0];
-
   return (
-    <div className="space-y-12">
-      <div className="flex items-center gap-5">
-        <UserAvatar name={currentUser.name} id={currentUser.id} size="lg" />
-        <div className="min-w-0">
-          <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-secondary mb-2">
-            <span aria-hidden="true" className="inline-block w-1.5 h-1.5 bg-accent rotate-45" />
-            Your feed
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight truncate">
-            Hey, {firstName}.
-          </h1>
-          <p className="text-sm text-base-content/60 capitalize mt-1">
-            {currentUser.role} · {localeName}
-          </p>
+    <div className="space-y-10 max-w-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+        <div className="flex items-center gap-5 flex-1 min-w-0">
+          <UserAvatar name={currentUser.name} id={currentUser.id} size="lg" />
+          <div className="min-w-0 flex-1">
+            <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-secondary mb-2">
+              <span aria-hidden="true" className="inline-block w-1.5 h-1.5 bg-accent rotate-45" />
+              Your feed
+            </p>
+            <h1 className="text-3xl font-semibold tracking-tight truncate">
+              Hey, {currentUser.name.split(" ")[0]}.
+            </h1>
+            <p className="text-sm text-base-content/60 capitalize mt-1">
+              {currentUser.role} · {localeName}
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <Link to="/posts/new" className="btn btn-sm btn-primary flex-1 sm:flex-none">
+            + New post
+          </Link>
+          <Link to="/shoutouts/new" className="btn btn-sm btn-secondary flex-1 sm:flex-none">
+            Send shoutout
+          </Link>
         </div>
       </div>
 
-      <div className="rounded-2xl bg-secondary text-secondary-content p-8 sm:p-10">
-        <p className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-accent mb-4">
-          <span aria-hidden="true" className="inline-block w-1.5 h-1.5 bg-accent rotate-45" />
-          Coming soon
-        </p>
-        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight max-w-xl">
-          We're still putting your feed together.
-        </h2>
-        <p className="mt-3 text-secondary-content/70 max-w-lg">
-          Thanks for your patience — we'll have something good for you soon.
-        </p>
+      <div className="space-y-4">
+        {isFeedLoading ? (
+          <div className="text-sm text-base-content/50">Loading feed…</div>
+        ) : !feed?.length ? (
+          <div className="text-sm text-base-content/50">
+            Nothing in the feed yet. Be the first to post something.
+          </div>
+        ) : (
+          feed.map((entry) => {
+            switch (entry.kind) {
+              case "post":
+                return (
+                  <PostCard
+                    key={`post:${entry.item.id}`}
+                    post={entry.item}
+                    author={usersById.get(entry.item.authorId)}
+                  />
+                );
+              case "shoutout":
+                return (
+                  <ShoutoutCard
+                    key={`shoutout:${entry.item.id}`}
+                    shoutout={entry.item}
+                    sender={usersById.get(entry.item.senderId)}
+                    recipient={usersById.get(entry.item.recipientId)}
+                  />
+                );
+              case "celebration":
+                return (
+                  <CelebrationCard
+                    key={`celebration:${entry.item.id}`}
+                    celebration={entry.item}
+                  />
+                );
+            }
+          })
+        )}
       </div>
     </div>
   );
