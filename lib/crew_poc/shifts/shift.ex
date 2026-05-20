@@ -5,6 +5,9 @@ defmodule CrewPoc.Shifts.Shift do
     extensions: [AshTypescript.Resource],
     authorizers: [Ash.Policy.Authorizer]
 
+  alias Ash.Changeset
+  alias CrewPoc.Chat
+
   postgres do
     table "shifts"
     repo CrewPoc.Repo
@@ -32,6 +35,13 @@ defmodule CrewPoc.Shifts.Shift do
 
       validate compare(:ends_at, greater_than: :starts_at) do
         message "ends_at must be after starts_at"
+      end
+
+      change fn changeset, _context ->
+        Changeset.after_action(changeset, fn _changeset, shift ->
+          Chat.create_shift_conversation!(shift.id, authorize?: false)
+          {:ok, shift}
+        end)
       end
     end
   end

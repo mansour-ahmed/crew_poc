@@ -3,6 +3,8 @@ defmodule CrewPoc.Generator do
 
   use Ash.Generator
 
+  require Ash.Query
+
   @spec uniq() :: integer()
   defp uniq, do: System.unique_integer([:positive])
 
@@ -199,5 +201,131 @@ defmodule CrewPoc.Generator do
       user_id ->
         user_id
     end
+  end
+
+  #####################
+  ### Conversations ###
+  #####################
+
+  # Conversations are auto-created by Venue / Shift after-action hooks. These
+  # helpers ensure a venue (or shift) exists, then look up the conversation the
+  # hook created. They return the Conversation struct directly — do NOT pipe
+  # through `generate()`.
+
+  @spec venue_conversation(keyword()) :: CrewPoc.Chat.Conversation.t()
+  def venue_conversation(opts \\ []) do
+    venue =
+      case opts[:venue_id] do
+        nil ->
+          [organization_id: opts[:organization_id]]
+          |> Keyword.reject(fn {_, v} -> is_nil(v) end)
+          |> venue()
+          |> generate()
+
+        venue_id ->
+          Ash.get!(CrewPoc.Venues.Venue, venue_id, authorize?: false)
+      end
+
+    CrewPoc.Chat.Conversation
+    |> Ash.Query.filter(venue_id == ^venue.id and kind == :venue_channel)
+    |> Ash.read_one!(authorize?: false)
+  end
+
+  @spec shift_conversation(keyword()) :: CrewPoc.Chat.Conversation.t()
+  def shift_conversation(opts \\ []) do
+    shift =
+      case opts[:shift_id] do
+        nil ->
+          [organization_id: opts[:organization_id]]
+          |> Keyword.reject(fn {_, v} -> is_nil(v) end)
+          |> shift()
+          |> generate()
+
+        shift_id ->
+          Ash.get!(CrewPoc.Shifts.Shift, shift_id, authorize?: false)
+      end
+
+    CrewPoc.Chat.Conversation
+    |> Ash.Query.filter(shift_id == ^shift.id and kind == :shift_channel)
+    |> Ash.read_one!(authorize?: false)
+  end
+
+  ###############################
+  ### Conversation Memberships ##
+  ###############################
+
+  @spec conversation_membership(keyword()) :: Ash.Generator.t()
+  def conversation_membership(opts \\ []) do
+    organization_id =
+      opts[:organization_id] ||
+        once(:default_organization_id, fn -> (organization() |> generate()).id end)
+
+    conversation_id =
+      opts[:conversation_id] ||
+        venue_conversation(organization_id: organization_id).id
+
+    user_id =
+      opts[:user_id] ||
+        ([organization_id: organization_id]
+         |> user()
+         |> generate()).id
+
+    changeset_generator(
+      CrewPoc.Chat.ConversationMembership,
+      :create,
+      defaults: [
+        conversation_id: conversation_id,
+        user_id: user_id
+      ],
+      overrides: Keyword.drop(opts, [:organization_id]),
+      authorize?: false
+    )
+  end
+
+  ################
+  ### Messages ###
+  ################
+
+  @spec message(keyword()) :: Ash.Generator.t()
+  def message(opts \\ []) do
+    organization_id =
+      opts[:organization_id] ||
+        once(:default_organization_id, fn -> (organization() |> generate()).id end)
+
+    {conversation_id, author} = resolve_message_conversation_and_author(opts, organization_id)
+
+    [organization_id: organization_id, conversation_id: conversation_id, user_id: author.id]
+    |> conversation_membership()
+    |> generate()
+
+    changeset_generator(
+      CrewPoc.Chat.Message,
+      :create,
+      defaults: [
+        conversation_id: conversation_id,
+        body: sequence(:message_body, &"Message body #{&1}")
+      ],
+      overrides: Keyword.drop(opts, [:organization_id, :author_id]),
+      actor: author,
+      authorize?: false
+    )
+  end
+
+  defp resolve_message_conversation_and_author(opts, organization_id) do
+    conversation_id =
+      opts[:conversation_id] || venue_conversation(organization_id: organization_id).id
+
+    author =
+      case opts[:author_id] do
+        nil ->
+          [organization_id: organization_id]
+          |> user()
+          |> generate()
+
+        author_id ->
+          Ash.get!(CrewPoc.Accounts.User, author_id, authorize?: false)
+      end
+
+    {conversation_id, author}
   end
 end

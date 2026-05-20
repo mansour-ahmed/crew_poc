@@ -67,7 +67,7 @@ config :spark,
 
 config :crew_poc,
   ecto_repos: [CrewPoc.Repo],
-  ash_domains: [CrewPoc.Accounts, CrewPoc.Venues, CrewPoc.Shifts],
+  ash_domains: [CrewPoc.Accounts, CrewPoc.Venues, CrewPoc.Shifts, CrewPoc.Chat],
   generators: [timestamp_type: :utc_datetime]
 
 # Configure the endpoint

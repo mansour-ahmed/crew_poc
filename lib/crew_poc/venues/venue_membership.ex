@@ -5,6 +5,8 @@ defmodule CrewPoc.Venues.VenueMembership do
     extensions: [AshTypescript.Resource],
     authorizers: [Ash.Policy.Authorizer]
 
+  alias CrewPoc.Chat.Changes.AddConversationMember
+
   postgres do
     table "venue_memberships"
     repo CrewPoc.Repo
@@ -19,6 +21,8 @@ defmodule CrewPoc.Venues.VenueMembership do
 
     create :create do
       accept [:venue_id, :user_id, :organization_id]
+
+      change {AddConversationMember, via: :venue_conversation}
     end
 
     destroy :destroy do

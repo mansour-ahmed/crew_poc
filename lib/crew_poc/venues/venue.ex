@@ -5,6 +5,8 @@ defmodule CrewPoc.Venues.Venue do
     extensions: [AshTypescript.Resource],
     authorizers: [Ash.Policy.Authorizer]
 
+  alias Ash.Changeset
+  alias CrewPoc.Chat
   alias CrewPoc.SlugHelpers
 
   postgres do
@@ -24,6 +26,13 @@ defmodule CrewPoc.Venues.Venue do
 
       change fn changeset, _context ->
         SlugHelpers.maybe_set_slug(changeset)
+      end
+
+      change fn changeset, _context ->
+        Changeset.after_action(changeset, fn _changeset, venue ->
+          Chat.create_venue_conversation!(venue.id, authorize?: false)
+          {:ok, venue}
+        end)
       end
     end
   end

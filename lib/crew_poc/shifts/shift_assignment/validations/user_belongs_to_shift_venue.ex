@@ -31,9 +31,7 @@ defmodule CrewPoc.Shifts.ShiftAssignment.Validations.UserBelongsToShiftVenue do
 
   defp shift_has_member?(shift_id, user_id) do
     Shift
-    |> Ash.Query.filter(
-      id == ^shift_id and exists(venue.venue_memberships, user_id == ^user_id)
-    )
+    |> Ash.Query.filter(id == ^shift_id and exists(venue.venue_memberships, user_id == ^user_id))
     |> Ash.exists?(authorize?: false)
   end
 end

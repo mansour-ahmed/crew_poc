@@ -55,6 +55,80 @@ export type UserAttributesOnlySchema = {
 };
 
 
+// Conversation Schema
+export type ConversationResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "kind" | "title" | "venueId" | "shiftId";
+  id: UUID;
+  organizationId: UUID;
+  kind: "shift_channel" | "venue_channel";
+  title: string;
+  venueId: UUID | null;
+  shiftId: UUID | null;
+};
+
+
+
+export type ConversationAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "kind" | "title" | "venueId" | "shiftId";
+  id: UUID;
+  organizationId: UUID;
+  kind: "shift_channel" | "venue_channel";
+  title: string;
+  venueId: UUID | null;
+  shiftId: UUID | null;
+};
+
+
+// ConversationMembership Schema
+export type ConversationMembershipResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "conversationId" | "userId" | "lastReadAt";
+  id: UUID;
+  organizationId: UUID;
+  conversationId: UUID;
+  userId: UUID;
+  lastReadAt: UtcDateTime | null;
+};
+
+
+
+export type ConversationMembershipAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "conversationId" | "userId" | "lastReadAt";
+  id: UUID;
+  organizationId: UUID;
+  conversationId: UUID;
+  userId: UUID;
+  lastReadAt: UtcDateTime | null;
+};
+
+
+// Message Schema
+export type MessageResourceSchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "conversationId" | "authorId" | "body";
+  id: UUID;
+  organizationId: UUID;
+  conversationId: UUID;
+  authorId: UUID;
+  body: string;
+};
+
+
+
+export type MessageAttributesOnlySchema = {
+  __type: "Resource";
+  __primitiveFields: "id" | "organizationId" | "conversationId" | "authorId" | "body";
+  id: UUID;
+  organizationId: UUID;
+  conversationId: UUID;
+  authorId: UUID;
+  body: string;
+};
+
+
 // Shift Schema
 export type ShiftResourceSchema = {
   __type: "Resource";
@@ -236,6 +310,133 @@ export type UserFilterInput = {
 
 
 };
+export type ConversationFilterInput = {
+  and?: Array<ConversationFilterInput>;
+  or?: Array<ConversationFilterInput>;
+  not?: Array<ConversationFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  organizationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  kind?: {
+    eq?: "shift_channel" | "venue_channel";
+    notEq?: "shift_channel" | "venue_channel";
+    in?: Array<"shift_channel" | "venue_channel">;
+  };
+
+  title?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+  venueId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+    isNil?: boolean;
+  };
+
+  shiftId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+    isNil?: boolean;
+  };
+
+
+
+};
+export type ConversationMembershipFilterInput = {
+  and?: Array<ConversationMembershipFilterInput>;
+  or?: Array<ConversationMembershipFilterInput>;
+  not?: Array<ConversationMembershipFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  organizationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  conversationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  userId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  lastReadAt?: {
+    eq?: UtcDateTime;
+    notEq?: UtcDateTime;
+    greaterThan?: UtcDateTime;
+    greaterThanOrEqual?: UtcDateTime;
+    lessThan?: UtcDateTime;
+    lessThanOrEqual?: UtcDateTime;
+    in?: Array<UtcDateTime>;
+    isNil?: boolean;
+  };
+
+
+
+};
+export type MessageFilterInput = {
+  and?: Array<MessageFilterInput>;
+  or?: Array<MessageFilterInput>;
+  not?: Array<MessageFilterInput>;
+
+  id?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  organizationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  conversationId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  authorId?: {
+    eq?: UUID;
+    notEq?: UUID;
+    in?: Array<UUID>;
+  };
+
+  body?: {
+    eq?: string;
+    notEq?: string;
+    in?: Array<string>;
+  };
+
+
+
+};
 export type ShiftFilterInput = {
   and?: Array<ShiftFilterInput>;
   or?: Array<ShiftFilterInput>;
@@ -405,6 +606,15 @@ export type OrganizationFilterField = (typeof organizationFilterFields)[number];
 export const userFilterFields = ["id", "email", "name", "organizationId", "role", "locale", "jobTitle", "birthday", "startedAt"] as const;
 export type UserFilterField = (typeof userFilterFields)[number];
 
+export const conversationFilterFields = ["id", "organizationId", "kind", "title", "venueId", "shiftId"] as const;
+export type ConversationFilterField = (typeof conversationFilterFields)[number];
+
+export const conversationMembershipFilterFields = ["id", "organizationId", "conversationId", "userId", "lastReadAt"] as const;
+export type ConversationMembershipFilterField = (typeof conversationMembershipFilterFields)[number];
+
+export const messageFilterFields = ["id", "organizationId", "conversationId", "authorId", "body"] as const;
+export type MessageFilterField = (typeof messageFilterFields)[number];
+
 export const shiftFilterFields = ["id", "name", "startsAt", "endsAt", "organizationId", "venueId"] as const;
 export type ShiftFilterField = (typeof shiftFilterFields)[number];
 
@@ -423,6 +633,15 @@ export type OrganizationSortField = (typeof organizationSortFields)[number];
 
 export const userSortFields = ["id", "email", "name", "organizationId", "role", "locale", "jobTitle", "birthday", "startedAt"] as const;
 export type UserSortField = (typeof userSortFields)[number];
+
+export const conversationSortFields = ["id", "organizationId", "kind", "title", "venueId", "shiftId"] as const;
+export type ConversationSortField = (typeof conversationSortFields)[number];
+
+export const conversationMembershipSortFields = ["id", "organizationId", "conversationId", "userId", "lastReadAt"] as const;
+export type ConversationMembershipSortField = (typeof conversationMembershipSortFields)[number];
+
+export const messageSortFields = ["id", "organizationId", "conversationId", "authorId", "body"] as const;
+export type MessageSortField = (typeof messageSortFields)[number];
 
 export const shiftSortFields = ["id", "name", "startsAt", "endsAt", "organizationId", "venueId"] as const;
 export type ShiftSortField = (typeof shiftSortFields)[number];

@@ -1,45 +1,48 @@
-defmodule CrewPoc.Shifts.ShiftAssignment do
+defmodule CrewPoc.Chat.ConversationMembership do
   use Ash.Resource,
-    domain: CrewPoc.Shifts,
+    domain: CrewPoc.Chat,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshTypescript.Resource],
     authorizers: [Ash.Policy.Authorizer]
 
-  alias CrewPoc.Chat.Changes.AddConversationMember
-  alias CrewPoc.Shifts.ShiftAssignment.Validations.UserBelongsToShiftVenue
-
   postgres do
-    table "shift_assignments"
+    table "conversation_memberships"
     repo CrewPoc.Repo
+
+    references do
+      reference :conversation, on_delete: :delete
+    end
   end
 
   typescript do
-    type_name "ShiftAssignment"
+    type_name "ConversationMembership"
   end
 
   resource do
-    description "Assigns a user to a shift. Used to drive shift conversation membership."
+    description "Links a user to a conversation, tracks last-read timestamp."
   end
 
   actions do
     defaults [:read]
 
     create :create do
-      accept [:shift_id, :user_id, :organization_id]
-
-      validate {UserBelongsToShiftVenue, []}
-
-      change {AddConversationMember, via: :shift_conversation}
+      accept [:conversation_id, :user_id]
     end
 
     destroy :destroy do
       require_atomic? false
     end
+
+    update :mark_read do
+      accept []
+      require_atomic? false
+      change set_attribute(:last_read_at, &DateTime.utc_now/0)
+    end
   end
 
   policies do
     policy action_type(:read) do
-      authorize_if always()
+      authorize_if expr(user_id == ^actor(:id))
     end
 
     policy action_type(:create) do
@@ -49,24 +52,24 @@ defmodule CrewPoc.Shifts.ShiftAssignment do
     policy action_type(:destroy) do
       authorize_if always()
     end
+
+    policy action(:mark_read) do
+      authorize_if expr(user_id == ^actor(:id))
+    end
   end
 
   attributes do
     uuid_primary_key :id
 
-    attribute :organization_id, :uuid, allow_nil?: false, public?: true
-    attribute :shift_id, :uuid, allow_nil?: false, public?: true
+    attribute :conversation_id, :uuid, allow_nil?: false, public?: true
     attribute :user_id, :uuid, allow_nil?: false, public?: true
+    attribute :last_read_at, :utc_datetime, allow_nil?: true, public?: true
 
     timestamps()
   end
 
   relationships do
-    belongs_to :organization, CrewPoc.Accounts.Organization,
-      attribute_writable?: true,
-      define_attribute?: false
-
-    belongs_to :shift, CrewPoc.Shifts.Shift,
+    belongs_to :conversation, CrewPoc.Chat.Conversation,
       attribute_writable?: true,
       define_attribute?: false
 
@@ -76,6 +79,6 @@ defmodule CrewPoc.Shifts.ShiftAssignment do
   end
 
   identities do
-    identity :unique_user_shift, [:user_id, :shift_id]
+    identity :unique_user_conversation, [:conversation_id, :user_id]
   end
 end
